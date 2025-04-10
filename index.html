@@ -731,6 +731,35 @@
         
         // Lancer l'initialisation du quiz
         initQuiz();
+
+        <script>
+  // Script de correction pour les boutons de navigation
+  document.addEventListener('DOMContentLoaded', function() {
+    // Force le mode clair
+    document.documentElement.style.setProperty('--bg', '#f9f9f9');
+    document.documentElement.style.setProperty('--card-bg', 'white');
+    document.documentElement.style.setProperty('--text', '#333');
+    
+    // Correctif pour les boutons
+    document.getElementById('next-btn').onclick = function() {
+      console.log("Bouton Suivant cliqué directement");
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+      } else {
+        finishQuiz();
+      }
+    };
+    
+    document.getElementById('prev-btn').onclick = function() {
+      console.log("Bouton Précédent cliqué directement");
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+      }
+    };
+  });
+</script>
     </script>
 </body>
 </html>
