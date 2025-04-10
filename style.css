@@ -1,6 +1,7 @@
 /* 
  * style.css - Feuille de style optimisée pour le quiz de français
  * Avec support pour mode sombre, accessibilité et PWA
+ * Version Corrigée pour Contraste
  */
  
 /* Variables pour une cohérence et facilité de maintenance */
@@ -168,7 +169,7 @@ h2 {
     margin-bottom: var(--spacing);
     padding: var(--spacing);
     border-radius: var(--radius);
-    background-color: var(--bg);
+    background-color: var(--bg); /* Utilise le fond général, clair ou sombre */
     border-left: 4px solid var(--primary);
     box-shadow: var(--shadow-sm);
     transition: transform 0.3s ease;
@@ -179,6 +180,7 @@ h2 {
     font-weight: 500;
     margin-bottom: var(--spacing);
     line-height: 1.5;
+    color: var(--text); /* Assure que le texte de la question utilise la couleur principale du thème */
 }
 
 /* Lecteur audio */
@@ -202,14 +204,14 @@ audio {
     display: block;
     margin: var(--spacing-sm) 0;
     padding: var(--spacing);
-    background-color: var(--bg);
+    background-color: var(--primary-lighter); /* Fond légèrement coloré pour se distinguer */
+    color: var(--text); /* Texte principal du thème */
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
     border: 2px solid transparent;
     position: relative;
     overflow: hidden;
-    /* Animation commune avec délai différent */
     animation: slide-up 0.3s ease both;
     min-height: 44px; /* Assure une taille minimum pour cible tactile */
 }
@@ -227,14 +229,15 @@ audio {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.05); /* Effet léger au survol */
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     pointer-events: none;
 }
 
 .option:hover {
-    background-color: #e8e8e8;
+    background-color: var(--primary-light); /* Couleur plus prononcée au survol */
+    color: var(--text-white); /* Texte blanc pour contraste sur fond plus foncé */
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
@@ -307,12 +310,14 @@ audio {
     background-color: var(--correct-light);
     border-left: 4px solid var(--correct);
     padding: var(--spacing);
+    color: var(--text); /* Assure lisibilité en mode clair/sombre */
 }
 
 .feedback-incorrect {
     background-color: var(--incorrect-light);
     border-left: 4px solid var(--incorrect);
     padding: var(--spacing);
+    color: var(--text); /* Assure lisibilité en mode clair/sombre */
 }
 
 .feedback-container h3 {
@@ -341,7 +346,7 @@ audio {
     justify-content: center;
     padding: var(--spacing-sm) var(--spacing);
     background-color: var(--primary);
-    color: var(--text-white);
+    color: var(--text-white); /* Texte toujours blanc sur fond primaire */
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -349,12 +354,11 @@ audio {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    /* Transition pour inclure box-shadow */
     transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     position: relative;
     overflow: hidden;
     text-decoration: none;
-    min-height: 44px; /* Assure une taille minimum pour cible tactile */
+    min-height: 44px;
     min-width: 44px;
 }
 
@@ -387,6 +391,7 @@ audio {
 
 .btn:disabled {
     background-color: var(--neutral);
+    color: rgba(255, 255, 255, 0.7); /* Texte blanc légèrement grisé pour bouton désactivé */
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -398,7 +403,7 @@ audio {
 
 .btn-secondary {
     background-color: #e0e0e0;
-    color: var(--text);
+    color: var(--text); /* Couleur texte standard pour fond clair */
 }
 
 .btn-secondary:hover {
@@ -407,6 +412,7 @@ audio {
 
 .btn-success {
     background-color: var(--correct);
+    color: var(--text-white); /* Texte blanc sur fond vert */
 }
 
 .btn-success:hover {
@@ -425,7 +431,7 @@ audio {
 
 .progress-bar {
     height: 8px;
-    background-color: #ecf0f1;
+    background-color: var(--primary-lighter); /* Fond légèrement coloré */
     border-radius: 4px;
     margin-bottom: var(--spacing);
     overflow: hidden;
@@ -449,12 +455,12 @@ audio {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: #ecf0f1;
+    background-color: var(--neutral); /* Couleur neutre par défaut */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-xs);
-    color: #7f8c8d;
+    color: var(--text-white); /* Texte blanc sur fond neutre */
     position: relative;
     margin-bottom: var(--spacing-sm);
     transition: all 0.3s ease;
@@ -477,7 +483,7 @@ audio {
     color: var(--text-white);
 }
 
-/* Timer */
+/* Timer (Pas visible dans les captures fournies, mais inclus pour complétude) */
 .timer-container {
     position: relative;
     margin-bottom: var(--spacing);
@@ -489,7 +495,8 @@ audio {
 .timer {
     font-size: var(--font-size);
     font-weight: bold;
-    background-color: #f0f0f0;
+    background-color: var(--primary-lighter); /* Fond légèrement coloré */
+    color: var(--text); /* Couleur texte standard */
     padding: var(--spacing-sm) var(--spacing);
     border-radius: 20px;
     display: flex;
@@ -520,11 +527,14 @@ audio {
     padding: var(--spacing-md);
     text-align: center;
     margin-top: var(--spacing-md);
-    background-color: var(--card-bg);
+    background-color: var(--card-bg); /* Fond standard de carte (blanc en clair, sombre en dark) */
     position: relative;
     box-shadow: var(--shadow);
     border-radius: var(--radius);
     animation: fadeIn 1s ease;
+    color: var(--text); /* Couleur de texte par défaut pour le contenu */
+    /* Note: Si le fond apparaît sombre en mode clair, vérifier JS ou conflits CSS. */
+    /* Les couleurs de texte ici sont conçues pour le fond var(--card-bg). */
 }
 
 .certificate:before {
@@ -563,20 +573,26 @@ audio {
 .certificate-score {
     font-size: var(--font-size-md);
     font-weight: bold;
-    color: var(--primary);
+    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
     margin: var(--spacing) 0;
+}
+
+.certificate-level {
+    font-weight: bold;
+    color: var(--text); /* Utilise la couleur de texte standard */
 }
 
 .certificate-date {
     font-style: italic;
     margin-top: var(--spacing);
+    color: var(--text-light); /* Couleur de texte légère */
 }
 
 /* Résumé des résultats */
 .score-highlight {
     font-size: var(--font-size-xxl);
     font-weight: bold;
-    color: var(--primary);
+    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
     margin: var(--spacing) 0;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
 }
@@ -590,7 +606,7 @@ audio {
     display: flex;
     justify-content: space-between;
     padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--primary-lighter); /* Ligne de séparation légère */
     align-items: center;
 }
 
@@ -602,6 +618,7 @@ audio {
     flex: 1;
     text-align: left;
     padding-right: var(--spacing);
+    color: var(--text); /* Couleur texte standard */
 }
 
 .summary-answer {
@@ -631,8 +648,11 @@ audio {
     text-align: center;
     padding: var(--spacing) 0;
     margin-top: auto;
-    background-color: #f2f2f2;
+    background-color: var(--card-bg); /* Fond standard de carte */
     border-radius: var(--radius);
+    color: var(--text); /* Couleur de texte par défaut */
+    /* Note: Si le fond apparaît sombre en mode clair, vérifier JS ou conflits CSS. */
+    /* Les couleurs de texte ici sont conçues pour le fond var(--card-bg). */
 }
 
 .footer-content {
@@ -644,14 +664,14 @@ audio {
 .footer-logo {
     font-weight: bold;
     font-size: var(--font-size);
-    color: var(--primary);
+    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
     margin-bottom: var(--spacing-sm);
     text-decoration: none;
 }
 
 .footer-text {
     font-size: var(--font-size-xs);
-    color: var(--text-light);
+    color: var(--text-light); /* Couleur de texte légère */
 }
 
 /* Buttons layout */
@@ -673,7 +693,8 @@ audio {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: white;
+    background-color: var(--card-bg); /* Fond de carte */
+    color: var(--text); /* Texte standard */
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -697,7 +718,8 @@ audio {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: white;
+    background-color: var(--card-bg); /* Fond de carte */
+    color: var(--text); /* Texte standard */
     border-radius: 8px;
     padding: 10px 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -720,7 +742,7 @@ audio {
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: var(--text-light); /* Couleur légère pour le bouton fermer */
     margin-left: 10px;
     min-height: 44px;
     min-width: 44px;
@@ -731,71 +753,101 @@ audio {
     :root {
         --bg: #121212;
         --card-bg: #1e1e1e;
-        --text: #f0f0f0;
-        --text-light: #bbb;
-        --primary-lighter: #22304f;
+        --text: #e0e0e0; /* Légèrement moins blanc que f0f0f0 pour confort */
+        --text-light: #a0a0a0; /* Gris plus clair pour contraste */
+        --primary: #8ba2d0; /* Correction: Utiliser une couleur primaire claire */
+        --primary-hover: #a8c0e8; /* Correction: Hover clair associé */
+        --primary-light: #5f7cb0; /* Correction: Version light ajustée */
+        --primary-lighter: #2a3a5a; /* Correction: Fond plus sombre pour options, etc. */
+        --neutral: #555; /* Gris plus foncé pour désactivé */
     }
     
+    /* Ajustements spécifiques pour le mode sombre */
+    h1, h2, h3, h4 {
+        color: var(--primary); /* Utilise la couleur primaire claire définie ci-dessus */
+    }
+
     .option {
-        background-color: #2a2a2a;
+        background-color: var(--primary-lighter); /* Fond plus sombre que card-bg */
+        color: var(--text); /* Texte clair */
     }
     
     .option:hover {
-        background-color: #333;
+        background-color: var(--primary-light); /* Hover plus clair */
+        color: var(--text-white); /* Assurer texte blanc */
     }
     
     .btn-secondary {
         background-color: #444;
-        color: #f0f0f0;
+        color: var(--text); /* Texte clair sur fond sombre */
     }
     
     .btn-secondary:hover {
         background-color: #555;
     }
+
+    .btn:disabled {
+        background-color: var(--neutral);
+        color: rgba(224, 224, 224, 0.5); /* Texte --text avec opacité réduite */
+    }
     
     .timer {
-        background-color: #2a2a2a;
+        background-color: var(--primary-lighter); /* Fond sombre cohérent */
+        color: var(--text); /* Texte clair */
+    }
+
+    .timer i {
+        color: var(--primary); /* Icône avec couleur primaire claire */
     }
     
     .progress-bar {
-        background-color: #333;
+        background-color: #333; /* Fond de la barre sombre */
     }
     
     .step {
-        background-color: #444;
-        color: #aaa;
+        background-color: var(--neutral); /* Fond neutre sombre */
+        color: var(--text); /* Texte clair */
     }
     
     .summary-item {
-        border-bottom-color: #333;
+        border-bottom-color: #333; /* Ligne de séparation sombre */
     }
     
     .footer {
-        background-color: #1a1a1a;
+        background-color: var(--card-bg); /* Fond de carte sombre */
+        color: var(--text); /* Texte clair */
+    }
+    
+    .certificate {
+        background-color: var(--card-bg); /* Fond de carte sombre */
+        color: var(--text); /* Texte clair */
+        border-color: var(--primary); /* Bordure avec couleur primaire claire */
+    }
+    
+    .certificate:before {
+        border-color: var(--primary); /* Bordure interne aussi */
+    }
+
+    .certificate-name, .certificate-score {
+        color: var(--primary); /* Utilise couleur primaire claire */
+        border-bottom-color: var(--primary);
+    }
+
+    .score-highlight {
+        color: var(--primary); /* Utilise couleur primaire claire */
+        text-shadow: none; /* Ombre moins utile en mode sombre */
     }
     
     .install-notification,
     .update-notification,
     .offline-notification {
-        background-color: #1e1e1e;
-        border-left-color: var(--primary-light);
+        background-color: var(--card-bg); /* Fond sombre */
+        color: var(--text); /* Texte clair */
+        border-left-color: var(--primary); /* Bordure primaire claire */
     }
-    
-    /* Amélioration du contraste pour l'accessibilité */
-    h1, h2, h3, h4 {
-        color: #8ba2d0; /* Version plus claire du primaire */
-    }
-    
-    .certificate {
-        background-color: #1a1a1a;
-    }
-    
-    .certificate-name, .certificate-score {
-        color: #8ba2d0;
-    }
-    
-    .score-highlight {
-        color: #8ba2d0;
+
+    .close-notification {
+        color: var(--text-light); /* Texte léger clair */
     }
 }
 
@@ -821,10 +873,6 @@ audio {
     .option {
         padding: var(--spacing-sm);
     }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 576px) {
@@ -832,6 +880,8 @@ audio {
         --spacing: 12px;
         --spacing-md: 16px;
         --font-size-xl: 1.5rem;
+        --font-size-lg: 1.25rem; /* Ajuster taille police pour petits écrans */
+        --font-size-xxl: 1.8rem; /* Ajuster score highlight */
     }
     
     body {
@@ -860,14 +910,16 @@ audio {
     .button-group {
         width: 100%;
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* Permet aux boutons de passer à la ligne si nécessaire */
     }
     
-    .btn {
-        margin: var(--spacing-xs);
-        width: 100%;
+    /* Ajuster pour que les boutons ne prennent pas toute la largeur */
+    .button-group .btn {
+       flex-grow: 1; /* Permet aux boutons de partager l'espace */
+       min-width: 120px; /* Largeur minimum */
+       width: auto; /* Largeur automatique */
     }
-    
+
     .summary-item {
         flex-direction: column;
         align-items: flex-start;
@@ -875,6 +927,16 @@ audio {
     
     .summary-answer {
         margin-top: var(--spacing-xs);
+    }
+
+    /* Assurer que les étapes restent lisibles */
+    .progress-steps {
+        gap: 4px; /* Ajouter un petit espace entre les étapes */
+    }
+    .step {
+        width: 25px;
+        height: 25px;
+        font-size: calc(var(--font-size-xs) * 0.9); /* Réduire légèrement la police */
     }
 }
 
