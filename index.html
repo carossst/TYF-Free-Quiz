@@ -13,14 +13,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Test Your French">
     
-    <!-- Manifeste PWA - Chemin relatif au dossier courant -->
+    <!-- Manifeste PWA -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Icônes - Chemins relatifs au dossier courant -->
+    <!-- Icônes -->
     <link rel="icon" href="icons/icon-72x72.png" type="image/png">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
-    <!-- CSS - Chemin relatif au dossier courant -->
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
     
     <!-- Font Awesome pour les icônes -->
@@ -32,7 +32,6 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
-                    // Utilisation d'un chemin relatif au dossier courant pour le Service Worker
                     const registration = await navigator.serviceWorker.register('sw.js');
                     console.log('Service Worker enregistré avec succès:', registration.scope);
                 } catch (error) {
@@ -374,42 +373,50 @@
             }
         ];
 
-        // Éléments DOM
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const resultsScreen = document.getElementById('results-screen');
-        const startBtn = document.getElementById('start-quiz');
-        const nextBtn = document.getElementById('next-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const restartBtn = document.getElementById('restart-btn');
-        const shareBtn = document.getElementById('share-btn');
-        const questionText = document.getElementById('question-text');
-        const questionNumber = document.getElementById('question-number');
-        const optionsContainer = document.getElementById('options');
-        const progressBar = document.getElementById('progress-bar');
-        const progressSteps = document.getElementById('progress-steps');
-        const feedbackContainer = document.getElementById('feedback');
-        const feedbackCorrect = document.getElementById('feedback-correct');
-        const feedbackIncorrect = document.getElementById('feedback-incorrect');
-        const feedbackCorrectText = document.getElementById('feedback-correct-text');
-        const feedbackIncorrectText = document.getElementById('feedback-incorrect-text');
-        const scoreElement = document.getElementById('score');
-        const levelResult = document.getElementById('level-result');
-        const certificateScore = document.getElementById('certificate-score');
-        const certificateLevel = document.getElementById('certificate-level');
-        const certificateDate = document.getElementById('certificate-date');
-        const audioContainer = document.getElementById('audio-container');
-        const questionAudio = document.getElementById('question-audio');
-
-        // Variables du quiz
+        // Déclaration des variables globales
         let currentQuestion = 0;
         let score = 0;
         let userAnswers = Array(questions.length).fill(null);
         let selectedOption = null;
 
-        // Initialiser le quiz
+        // Attendre que le DOM soit complètement chargé
+        document.addEventListener('DOMContentLoaded', function() {
+            initQuiz();
+        });
+
+        // Éléments DOM
         function initQuiz() {
+            console.log("Initialisation du quiz...");
+            
+            // Récupération des éléments du DOM
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const resultsScreen = document.getElementById('results-screen');
+            const startBtn = document.getElementById('start-quiz');
+            const nextBtn = document.getElementById('next-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const questionText = document.getElementById('question-text');
+            const questionNumber = document.getElementById('question-number');
+            const optionsContainer = document.getElementById('options');
+            const progressBar = document.getElementById('progress-bar');
+            const progressSteps = document.getElementById('progress-steps');
+            const feedbackContainer = document.getElementById('feedback');
+            const feedbackCorrect = document.getElementById('feedback-correct');
+            const feedbackIncorrect = document.getElementById('feedback-incorrect');
+            const feedbackCorrectText = document.getElementById('feedback-correct-text');
+            const feedbackIncorrectText = document.getElementById('feedback-incorrect-text');
+            const scoreElement = document.getElementById('score');
+            const levelResult = document.getElementById('level-result');
+            const certificateScore = document.getElementById('certificate-score');
+            const certificateLevel = document.getElementById('certificate-level');
+            const certificateDate = document.getElementById('certificate-date');
+            const audioContainer = document.getElementById('audio-container');
+            const questionAudio = document.getElementById('question-audio');
+            
             // Créer les étapes de progression
+            progressSteps.innerHTML = '';
             for (let i = 0; i < questions.length; i++) {
                 const step = document.createElement('div');
                 step.className = 'step';
@@ -425,271 +432,304 @@
             // Afficher la première question
             showQuestion(currentQuestion);
             
-            // Gérer les événements des boutons
-            startBtn.addEventListener('click', startQuiz);
-            nextBtn.addEventListener('click', nextQuestion);
-            prevBtn.addEventListener('click', prevQuestion);
-            restartBtn.addEventListener('click', restartQuiz);
-            shareBtn.addEventListener('click', shareResults);
-        }
-
-        // Démarrer le quiz
-        function startQuiz() {
-            welcomeScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
-        }
-
-        // Afficher une question
-        function showQuestion(index) {
-            // Mettre à jour le texte de la question
-            questionText.textContent = questions[index].text;
-            questionNumber.textContent = `Question ${index + 1} sur ${questions.length}`;
-            
-            // Gérer l'audio si présent - Modification du chemin pour utiliser un chemin relatif
-            if (questions[index].audio) {
-                audioContainer.classList.remove('hidden');
-                questionAudio.src = `audio/${questions[index].audio}`;
-                questionAudio.load();
-            } else {
-                audioContainer.classList.add('hidden');
-                questionAudio.src = '';
+            // Démarrer le quiz
+            function startQuiz() {
+                console.log("Démarrage du quiz...");
+                welcomeScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
             }
             
-            // Créer les options
-            optionsContainer.innerHTML = '';
-            questions[index].options.forEach((option, i) => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'option';
-                optionElement.textContent = option;
-                optionElement.setAttribute('data-index', i);
-                optionElement.tabIndex = 0;
+            // Afficher une question
+            function showQuestion(index) {
+                console.log(`Affichage de la question ${index + 1}`);
                 
-                // Ajouter la classe 'selected' si cette option a déjà été sélectionnée
-                if (userAnswers[index] === i) {
-                    optionElement.classList.add('selected');
-                    selectedOption = optionElement;
+                // Mettre à jour le texte de la question
+                questionText.textContent = questions[index].text;
+                questionNumber.textContent = `Question ${index + 1} sur ${questions.length}`;
+                
+                // Gérer l'audio si présent
+                if (questions[index].audio) {
+                    audioContainer.classList.remove('hidden');
+                    questionAudio.src = `audio/${questions[index].audio}`;
+                    questionAudio.load();
+                } else {
+                    audioContainer.classList.add('hidden');
+                    questionAudio.src = '';
                 }
                 
-                // Ajouter l'événement de clic
-                optionElement.addEventListener('click', selectOption);
+                // Créer les options
+                optionsContainer.innerHTML = '';
+                questions[index].options.forEach((option, i) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    optionElement.textContent = option;
+                    optionElement.setAttribute('data-index', i);
+                    optionElement.tabIndex = 0;
+                    
+                    // Ajouter la classe 'selected' si cette option a déjà été sélectionnée
+                    if (userAnswers[index] === i) {
+                        optionElement.classList.add('selected');
+                        selectedOption = optionElement;
+                    }
+                    
+                    // Ajouter l'événement de clic
+                    optionElement.addEventListener('click', function() {
+                        selectOption(this);
+                    });
+                    
+                    // Ajouter l'événement clavier (accessibilité)
+                    optionElement.addEventListener('keydown', function(e) {
+                        if (e.code === 'Enter' || e.code === 'Space') {
+                            e.preventDefault();
+                            selectOption(this);
+                        }
+                    });
+                    
+                    optionsContainer.appendChild(optionElement);
+                });
                 
-                // Ajouter l'événement clavier (accessibilité)
-                optionElement.addEventListener('keydown', function(e) {
-                    if (e.code === 'Enter' || e.code === 'Space') {
-                        e.preventDefault();
-                        selectOption.call(this);
+                // Mettre à jour la barre de progression
+                updateProgress();
+                
+                // Afficher le feedback si une réponse a déjà été donnée
+                if (userAnswers[index] !== null) {
+                    showFeedback(index, userAnswers[index]);
+                } else {
+                    hideFeedback();
+                }
+                
+                // Activer/désactiver les boutons de navigation
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = userAnswers[index] === null;
+                
+                if (index === questions.length - 1) {
+                    nextBtn.innerHTML = 'Terminer <i class="fas fa-check btn-icon"></i>';
+                } else {
+                    nextBtn.innerHTML = 'Suivant <i class="fas fa-arrow-right btn-icon"></i>';
+                }
+            }
+            
+            // Sélectionner une option
+            function selectOption(optionElement) {
+                console.log("Option sélectionnée");
+                
+                // Retirer la classe 'selected' de l'option précédemment sélectionnée
+                if (selectedOption) {
+                    selectedOption.classList.remove('selected');
+                }
+                
+                // Ajouter la classe 'selected' à l'option sélectionnée
+                optionElement.classList.add('selected');
+                selectedOption = optionElement;
+                
+                // Enregistrer la réponse
+                const selectedIndex = parseInt(optionElement.getAttribute('data-index'));
+                userAnswers[currentQuestion] = selectedIndex;
+                
+                // Afficher le feedback
+                showFeedback(currentQuestion, selectedIndex);
+                
+                // Activer le bouton suivant
+                nextBtn.disabled = false;
+                console.log("Bouton Suivant activé");
+                
+                // Mettre à jour la progression
+                updateProgress();
+            }
+            
+            // Afficher le feedback
+            function showFeedback(questionIndex, selectedIndex) {
+                const isCorrect = selectedIndex === questions[questionIndex].correctIndex;
+                
+                // Ajouter les classes correct/incorrect aux options
+                const options = document.querySelectorAll('.option');
+                options.forEach((option, i) => {
+                    option.classList.remove('correct', 'incorrect');
+                    if (i === questions[questionIndex].correctIndex) {
+                        option.classList.add('correct');
+                    } else if (i === selectedIndex && !isCorrect) {
+                        option.classList.add('incorrect');
                     }
                 });
                 
-                optionsContainer.appendChild(optionElement);
-            });
-            
-            // Mettre à jour la barre de progression
-            updateProgress();
-            
-            // Afficher le feedback si une réponse a déjà été donnée
-            if (userAnswers[index] !== null) {
-                showFeedback(index, userAnswers[index]);
-            } else {
-                hideFeedback();
+                // Afficher le feedback
+                feedbackContainer.classList.add('visible');
+                
+                if (isCorrect) {
+                    feedbackCorrect.classList.remove('hidden');
+                    feedbackIncorrect.classList.add('hidden');
+                    feedbackCorrectText.innerHTML = questions[questionIndex].explanation;
+                } else {
+                    feedbackCorrect.classList.add('hidden');
+                    feedbackIncorrect.classList.remove('hidden');
+                    feedbackIncorrectText.innerHTML = questions[questionIndex].explanation;
+                }
             }
             
-            // Activer/désactiver les boutons de navigation
-            prevBtn.disabled = index === 0;
-            nextBtn.disabled = userAnswers[index] === null;
-            nextBtn.textContent = index === questions.length - 1 ? 'Terminer' : 'Suivant';
-            nextBtn.innerHTML = index === questions.length - 1 ? 'Terminer <i class="fas fa-check btn-icon"></i>' : 'Suivant <i class="fas fa-arrow-right btn-icon"></i>';
-        }
-
-        // Sélectionner une option
-        function selectOption() {
-            // Retirer la classe 'selected' de l'option précédemment sélectionnée
-            if (selectedOption) {
-                selectedOption.classList.remove('selected');
+            // Cacher le feedback
+            function hideFeedback() {
+                feedbackContainer.classList.remove('visible');
             }
-            
-            // Ajouter la classe 'selected' à l'option sélectionnée
-            this.classList.add('selected');
-            selectedOption = this;
-            
-            // Enregistrer la réponse
-            const selectedIndex = parseInt(this.getAttribute('data-index'));
-            userAnswers[currentQuestion] = selectedIndex;
-            
-            // Afficher le feedback
-            showFeedback(currentQuestion, selectedIndex);
-            
-            // Activer le bouton suivant
-            nextBtn.disabled = false;
             
             // Mettre à jour la progression
-            updateProgress();
-        }
-
-        // Afficher le feedback
-        function showFeedback(questionIndex, selectedIndex) {
-            const isCorrect = selectedIndex === questions[questionIndex].correctIndex;
-            
-            // Ajouter les classes correct/incorrect aux options
-            const options = document.querySelectorAll('.option');
-            options.forEach((option, i) => {
-                option.classList.remove('correct', 'incorrect');
-                option.classList.add(i === questions[questionIndex].correctIndex ? 'correct' : '');
-                if (i === selectedIndex && !isCorrect) {
-                    option.classList.add('incorrect');
-                }
-            });
-            
-            // Afficher le feedback
-            feedbackContainer.classList.add('visible');
-            
-            if (isCorrect) {
-                feedbackCorrect.classList.remove('hidden');
-                feedbackIncorrect.classList.add('hidden');
-                feedbackCorrectText.innerHTML = questions[questionIndex].explanation; // Utiliser innerHTML pour interpréter les balises HTML
-            } else {
-                feedbackCorrect.classList.add('hidden');
-                feedbackIncorrect.classList.remove('hidden');
-                feedbackIncorrectText.innerHTML = questions[questionIndex].explanation; // Utiliser innerHTML pour interpréter les balises HTML
-            }
-        }
-
-        // Cacher le feedback
-        function hideFeedback() {
-            feedbackContainer.classList.remove('visible');
-        }
-
-        // Mettre à jour la progression
-        function updateProgress() {
-            // Mettre à jour la barre de progression
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            progressBar.style.width = `${progress}%`;
-            
-            // Mettre à jour les étapes
-            const steps = document.querySelectorAll('.step');
-            steps.forEach((step, i) => {
-                step.classList.remove('active', 'completed', 'error');
+            function updateProgress() {
+                // Mettre à jour la barre de progression
+                const progress = ((currentQuestion + 1) / questions.length) * 100;
+                progressBar.style.width = `${progress}%`;
                 
-                if (i === currentQuestion) {
-                    step.classList.add('active');
-                } else if (i < currentQuestion) {
-                    if (userAnswers[i] === questions[i].correctIndex) {
-                        step.classList.add('completed');
-                    } else {
-                        step.classList.add('error');
+                // Mettre à jour les étapes
+                const steps = document.querySelectorAll('.step');
+                steps.forEach((step, i) => {
+                    step.classList.remove('active', 'completed', 'error');
+                    
+                    if (i === currentQuestion) {
+                        step.classList.add('active');
+                    } else if (i < currentQuestion) {
+                        if (userAnswers[i] === questions[i].correctIndex) {
+                            step.classList.add('completed');
+                        } else {
+                            step.classList.add('error');
+                        }
                     }
+                });
+            }
+            
+            // Question suivante
+            function nextQuestion() {
+                console.log("Bouton Suivant cliqué");
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                } else {
+                    finishQuiz();
                 }
-            });
-        }
-
-        // Question suivante
-        function nextQuestion() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            } else {
-                finishQuiz();
-            }
-        }
-
-        // Question précédente
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                showQuestion(currentQuestion);
-            }
-        }
-
-        // Terminer le quiz
-        function finishQuiz() {
-            // Calculer le score
-            score = userAnswers.reduce((total, answer, index) => {
-                return total + (answer === questions[index].correctIndex ? 1 : 0);
-            }, 0);
-            
-            // Afficher le score
-            scoreElement.textContent = score;
-            certificateScore.textContent = score;
-            
-            // Déterminer le niveau
-            let level = '';
-            let levelDescription = '';
-            
-            if (score >= 8) {
-                level = 'A2';
-                levelDescription = 'You have mastered the basics of French communication. You can introduce yourself, ask for directions, and understand simple phrases used in everyday life.';
-            } else if (score >= 6) {
-                level = 'A1+';
-                levelDescription = 'You know the fundamentals and are approaching the A2 level. With a bit more practice on everyday expressions, you\'ll soon reach the A2 level.';
-            } else if (score >= 4) {
-                level = 'A1';
-                levelDescription = 'You know some basic expressions, but you still need to practice to reach level A2. Keep learning!';
-            } else if (score >= 2) {
-                level = 'Pre-A1';
-                levelDescription = 'You have started learning French. With more practice on basic expressions, you\'ll progress to A1 level.';
-            } else {
-                level = 'Beginner';
-                levelDescription = 'You\'re just beginning with French. Don\'t worry! Everyone starts somewhere. Keep practicing!';
             }
             
-            // Afficher le niveau
-            levelResult.innerHTML = `
-                <h3>Niveau: ${level}</h3>
-                <p>${levelDescription}</p>
-            `;
-            certificateLevel.textContent = level;
-            
-            // Afficher la date sur le certificat
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            certificateDate.textContent = now.toLocaleDateString('fr-FR', options);
-            
-            // Afficher l'écran des résultats
-            quizScreen.classList.add('hidden');
-            resultsScreen.classList.remove('hidden');
-        }
-
-        // Partager les résultats
-        function shareResults() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Test Your French - Mon résultat',
-                    text: `J'ai obtenu un score de ${score}/10 et atteint le niveau ${document.getElementById('certificate-level').textContent} au Test Your French Quiz !`,
-                    url: window.location.href
-                })
-                .catch(error => console.log('Erreur de partage:', error));
-            } else {
-                // Fallback si l'API de partage n'est pas disponible
-                alert(`Copiez ce texte pour partager: J'ai obtenu un score de ${score}/10 et atteint le niveau ${document.getElementById('certificate-level').textContent} au Test Your French Quiz !`);
-            }
-        }
-
-        // Redémarrer le quiz
-        function restartQuiz() {
-            // Réinitialiser les variables
-            currentQuestion = 0;
-            score = 0;
-            userAnswers = Array(questions.length).fill(null);
-            selectedOption = null;
-            
-            // Réinitialiser les étapes de progression
-            const steps = document.querySelectorAll('.step');
-            steps.forEach((step, i) => {
-                step.classList.remove('active', 'completed', 'error');
-                if (i === 0) {
-                    step.classList.add('active');
+            // Question précédente
+            function prevQuestion() {
+                console.log("Bouton Précédent cliqué");
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    showQuestion(currentQuestion);
                 }
+            }
+            
+            // Terminer le quiz
+            function finishQuiz() {
+                console.log("Fin du quiz");
+                
+                // Calculer le score
+                score = userAnswers.reduce((total, answer, index) => {
+                    return total + (answer === questions[index].correctIndex ? 1 : 0);
+                }, 0);
+                
+                // Afficher le score
+                scoreElement.textContent = score;
+                certificateScore.textContent = score;
+                
+                // Déterminer le niveau
+                let level = '';
+                let levelDescription = '';
+                
+                if (score >= 8) {
+                    level = 'A2';
+                    levelDescription = 'You have mastered the basics of French communication. You can introduce yourself, ask for directions, and understand simple phrases used in everyday life.';
+                } else if (score >= 6) {
+                    level = 'A1+';
+                    levelDescription = 'You know the fundamentals and are approaching the A2 level. With a bit more practice on everyday expressions, you\'ll soon reach the A2 level.';
+                } else if (score >= 4) {
+                    level = 'A1';
+                    levelDescription = 'You know some basic expressions, but you still need to practice to reach level A2. Keep learning!';
+                } else if (score >= 2) {
+                    level = 'Pre-A1';
+                    levelDescription = 'You have started learning French. With more practice on basic expressions, you\'ll progress to A1 level.';
+                } else {
+                    level = 'Beginner';
+                    levelDescription = 'You\'re just beginning with French. Don\'t worry! Everyone starts somewhere. Keep practicing!';
+                }
+                
+                // Afficher le niveau
+                levelResult.innerHTML = `
+                    <h3>Niveau: ${level}</h3>
+                    <p>${levelDescription}</p>
+                `;
+                certificateLevel.textContent = level;
+                
+                // Afficher la date sur le certificat
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                certificateDate.textContent = now.toLocaleDateString('fr-FR', options);
+                
+                // Afficher l'écran des résultats
+                quizScreen.classList.add('hidden');
+                resultsScreen.classList.remove('hidden');
+            }
+            
+            // Partager les résultats
+            function shareResults() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Test Your French - Mon résultat',
+                        text: `J'ai obtenu un score de ${score}/10 et atteint le niveau ${certificateLevel.textContent} au Test Your French Quiz !`,
+                        url: window.location.href
+                    })
+                    .catch(error => console.log('Erreur de partage:', error));
+                } else {
+                    // Fallback si l'API de partage n'est pas disponible
+                    alert(`Copiez ce texte pour partager: J'ai obtenu un score de ${score}/10 et atteint le niveau ${certificateLevel.textContent} au Test Your French Quiz !`);
+                }
+            }
+            
+            // Redémarrer le quiz
+            function restartQuiz() {
+                console.log("Redémarrage du quiz");
+                
+                // Réinitialiser les variables
+                currentQuestion = 0;
+                score = 0;
+                userAnswers = Array(questions.length).fill(null);
+                selectedOption = null;
+                
+                // Réinitialiser les étapes de progression
+                const steps = document.querySelectorAll('.step');
+                steps.forEach((step, i) => {
+                    step.classList.remove('active', 'completed', 'error');
+                    if (i === 0) {
+                        step.classList.add('active');
+                    }
+                });
+                
+                // Retourner à l'écran du quiz
+                resultsScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+                
+                // Afficher la première question
+                showQuestion(0);
+            }
+            
+            // Attacher les événements des boutons
+            console.log("Attachement des événements des boutons...");
+            startBtn.addEventListener('click', startQuiz);
+            
+            // Utilisation de fonctions nommées pour les écouteurs d'événements pour améliorer la lisibilité
+            nextBtn.addEventListener('click', function(e) {
+                console.log("Clic sur le bouton Suivant");
+                nextQuestion();
             });
             
-            // Retourner à l'écran du quiz
-            resultsScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
+            prevBtn.addEventListener('click', function(e) {
+                console.log("Clic sur le bouton Précédent");
+                prevQuestion();
+            });
             
-            // Afficher la première question
-            showQuestion(0);
+            restartBtn.addEventListener('click', restartQuiz);
+            shareBtn.addEventListener('click', shareResults);
+            
+            // Débug pour vérifier si les écouteurs sont bien attachés
+            console.log("Initialisation terminée. Quiz prêt.");
         }
-
-        // Initialiser le quiz
+        
+        // Lancer l'initialisation du quiz
         initQuiz();
     </script>
 </body>
