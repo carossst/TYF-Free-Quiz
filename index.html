@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en"> <!-- Changed lang to "en" -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Your French - Quiz Interactif</title>
-    <meta name="description" content="Testez votre niveau de français avec ce quiz rapide et découvrez votre score !">
+    <title>Test Your French - Interactive Quiz</title> <!-- Title in English -->
+    <meta name="description" content="Test your French level with this quick quiz and find out your score!"> <!-- Description in English -->
 
     <!-- Meta tags PWA -->
     <meta name="theme-color" content="#111f46">
@@ -26,18 +26,15 @@
     <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Script pour l'enregistrement du Service Worker (Optionnel, si vous utilisez sw.js) -->
-    <!-- Vous pouvez le laisser ici ou le déplacer à la fin si vous préférez -->
+    <!-- Script pour l'enregistrement du Service Worker (Optionnel) -->
     <script>
-        // Vérifier si les Service Workers sont supportés
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
-                    // Assurez-vous que le chemin vers sw.js est correct
                     const registration = await navigator.serviceWorker.register('sw.js');
-                    console.log('Service Worker enregistré avec succès:', registration.scope);
+                    console.log('Service Worker registered successfully:', registration.scope); // Log in English
                 } catch (error) {
-                    console.error('Échec de l\'enregistrement du Service Worker:', error);
+                    console.error('Service Worker registration failed:', error); // Log in English
                 }
             });
         }
@@ -45,136 +42,139 @@
 </head>
 <body>
     <div class="quiz-container">
-        <!-- Écran d'accueil -->
+        <!-- Welcome Screen -->
         <div id="welcome-screen" class="screen fade-in">
             <div class="quiz-logo">
                 <img src="icons/icon-192x192.png" alt="Test Your French Logo">
             </div>
             <h1>Test Your French</h1>
-            <p class="subtitle">Découvrez votre niveau de français en quelques minutes !</p>
+            <p class="subtitle">Find out your French level in minutes!</p> <!-- Subtitle in English -->
             <div class="test-details">
-                <div class="detail-item"><i class="fas fa-check"></i> Grammaire & Vocabulaire</div>
-                <div class="detail-item"><i class="fas fa-check"></i> Compréhension</div>
-                <div class="detail-item"><i class="fas fa-check"></i> Expressions idiomatiques</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Grammar & Vocabulary</div> <!-- Details in English -->
+                <div class="detail-item"><i class="fas fa-check"></i> Comprehension</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Idiomatic Expressions</div>
             </div>
             <div class="mt-6 px-4">
-                <p>Ce quiz contient <span id="question-count">0</span> questions à choix multiples.</p>
-                <p>Défiez-vous et partagez votre score avec vos amis !</p>
+                <p>This quiz contains <span id="question-count">0</span> multiple-choice questions.</p> <!-- Text in English -->
+                <p>Challenge yourself and share your score with friends!</p> <!-- Text in English -->
             </div>
             <div class="timer-option">
                 <label class="flex-center">
                     <input type="checkbox" id="enable-timer" checked>
-                    <span>Activer le chronomètre pour plus de challenge</span>
+                    <span>Enable timer for more challenge</span> <!-- Text in English -->
                 </label>
             </div>
-            <button id="start-btn" class="btn" aria-label="Commencer le quiz">
-                <i class="btn-icon fas fa-play"></i>Commencer le Quiz
+            <button id="start-btn" class="btn" aria-label="Start the quiz"> <!-- Label in English -->
+                <i class="btn-icon fas fa-play"></i>Start Quiz <!-- Button text in English -->
             </button>
         </div>
 
-        <!-- Écran du Quiz -->
+        <!-- Quiz Screen -->
         <div id="quiz-screen" class="hidden">
-            <h1>Quiz de Français</h1>
+            <h1>French Quiz</h1> <!-- Title in English -->
 
             <div class="timer-container hidden" id="timer-display">
                 <div class="timer" aria-live="polite">
                     <i class="fas fa-clock"></i>
                     <span id="timer-value">00:00</span>
                 </div>
-                <button class="timer-toggle" id="timer-toggle" aria-label="Masquer le chronomètre">
+                <button class="timer-toggle" id="timer-toggle" aria-label="Hide timer"> <!-- Label in English -->
                     <i class="fas fa-eye-slash"></i>
                 </button>
             </div>
 
-            <div class="progress-container" aria-label="Progression du quiz">
+            <div class="progress-container" aria-label="Quiz progress"> <!-- Label in English -->
                 <div class="progress-bar">
                     <div class="progress" id="progress"></div>
                 </div>
                 <div class="progress-steps" id="progress-steps" aria-hidden="true">
-                    <!-- Les étapes seront ajoutées ici dynamiquement -->
+                    <!-- Steps added dynamically -->
                 </div>
             </div>
 
-            <div id="quiz" role="form" tabindex="-1" aria-label="Zone de la question actuelle">
-                <!-- Les questions seront ajoutées ici dynamiquement -->
+            <div id="quiz" role="form" tabindex="-1" aria-label="Current question area"> <!-- Label in English -->
+                <!-- Questions added dynamically -->
             </div>
 
             <div id="feedback" class="feedback-container" aria-live="polite">
-                <!-- Le feedback sera ajouté ici dynamiquement -->
+                <!-- Feedback added dynamically -->
             </div>
 
             <div class="buttons">
                 <div class="button-group">
-                    <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Question précédente">
-                        <i class="fas fa-arrow-left btn-icon"></i>Précédent
+                    <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Previous question"> <!-- Label in English -->
+                        <i class="fas fa-arrow-left btn-icon"></i>Previous <!-- Button text in English -->
                     </button>
                 </div>
                 <div class="button-group">
-                    <button id="next-btn" class="btn" disabled aria-label="Question suivante">
-                        Suivant<i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    <button id="next-btn" class="btn" disabled aria-label="Next question"> <!-- Label in English -->
+                        Next<i class="fas fa-arrow-right" style="margin-left: 8px;"></i> <!-- Button text in English -->
                     </button>
-                    <button id="submit-btn" class="btn" style="display: none;" aria-label="Terminer le quiz">
-                        Résultats<i class="fas fa-flag-checkered" style="margin-left: 8px;"></i>
+                    <button id="submit-btn" class="btn" style="display: none;" aria-label="Finish quiz"> <!-- Label in English -->
+                        Results<i class="fas fa-flag-checkered" style="margin-left: 8px;"></i> <!-- Button text in English -->
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Écran des Résultats -->
-        <div id="result" class="result-container" style="display: none;" tabindex="-1" aria-label="Zone des résultats">
-            <h1>Résultats du Quiz</h1>
+        <!-- Results Screen -->
+        <div id="result" class="result-container" style="display: none;" tabindex="-1" aria-label="Results area"> <!-- Label in English -->
+            <h1>Quiz Results</h1> <!-- Title in English -->
             <div class="score-highlight" aria-live="polite">
                 <span id="score">0</span>/<span id="total-questions">0</span>
             </div>
 
-            <div id="score-message" aria-live="polite"></div>
+            <!-- Message displaying LEVEL -->
+            <div id="score-message" aria-live="polite">
+                <!-- Level will be inserted here -->
+            </div>
 
             <div class="stats-container fade-in">
-                <h2>Votre Performance</h2>
+                <h2>Your Performance</h2> <!-- Title in English -->
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="accuracy">0%</div>
-                        <div class="stat-label">Précision</div>
+                        <div class="stat-label">Accuracy</div> <!-- Label in English -->
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="avg-time">0s</div>
-                        <div class="stat-label">Temps moyen / question</div>
+                        <div class="stat-label">Avg. Time / Question</div> <!-- Label in English -->
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="fastest-answer">0s</div>
-                        <div class="stat-label">Réponse la plus rapide</div>
+                        <div class="stat-label">Fastest Answer</div> <!-- Label in English -->
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="slowest-answer">0s</div>
-                        <div class="stat-label">Réponse la plus longue</div>
+                        <div class="stat-label">Slowest Answer</div> <!-- Label in English -->
                     </div>
                 </div>
             </div>
 
             <div class="cta-container fade-in">
-                <h3 class="text-center mb-4">Continuez votre progression en français</h3>
+                <h3 class="text-center mb-4">Continue your French progress</h3> <!-- Title in English -->
                 <div class="cta-buttons">
-                    <a href="https://testyourfrench.com/french-tests-bundle/" target="_blank" rel="noopener" class="cta-button primary">
+                     <a href="https://testyourfrench.com/french-tests-bundle/" target="_blank" rel="noopener" class="cta-button primary">
                         <span class="cta-icon">🔍</span>
                         <div class="cta-content">
-                            <span class="cta-title">Quiz Complet de Français</span>
-                            <span class="cta-desc">Testez vraiment votre niveau avec notre pack complet de tests</span>
+                            <span class="cta-title">Complete French Quiz Bundle</span> <!-- Text in English -->
+                            <span class="cta-desc">Truly test your level with our comprehensive test pack</span> <!-- Text in English -->
                         </div>
                         <span class="cta-arrow">→</span>
                     </a>
                     <a href="https://testyourfrench.com/travel-to-france-essentials-bundle/" target="_blank" rel="noopener" class="cta-button secondary">
                         <span class="cta-icon">🗼</span>
                         <div class="cta-content">
-                            <span class="cta-title">Guide Essentiel de Paris</span>
-                            <span class="cta-desc">Tout ce qu'il faut savoir pour votre voyage à Paris</span>
+                            <span class="cta-title">Essential Paris Guide</span> <!-- Text in English -->
+                            <span class="cta-desc">Everything you need to know for your trip to Paris</span> <!-- Text in English -->
                         </div>
                         <span class="cta-arrow">→</span>
                     </a>
                     <a href="https://onlinenewsletter.kit.com/products/10-things-french-b1-exam" target="_blank" rel="noopener" class="cta-button tertiary">
                         <span class="cta-icon">🎓</span>
                         <div class="cta-content">
-                            <span class="cta-title">Préparez votre B1</span>
-                            <span class="cta-desc">Les 10 clés pour réussir l'examen B1 de français</span>
+                            <span class="cta-title">Prepare your B1</span> <!-- Text in English -->
+                            <span class="cta-desc">The 10 keys to succeeding in the French B1 exam</span> <!-- Text in English -->
                         </div>
                         <span class="cta-arrow">→</span>
                     </a>
@@ -182,45 +182,37 @@
             </div>
 
             <div id="summary-container" class="summary-container fade-in">
-                <h2>Détail des réponses</h2>
+                <h2>Answer Details</h2> <!-- Title in English -->
                 <div id="answers-summary">
-                    <!-- Le résumé des réponses sera ajouté ici dynamiquement -->
+                    <!-- Answer summary added dynamically -->
                 </div>
             </div>
 
-            <div id="certificate" class="certificate hidden fade-in">
-                <h2>Certificat de Réussite</h2>
-                <div class="certificate-content">
-                    <p>Ce certificat atteste que</p>
-                    <div class="certificate-name" id="participant-name">Participant</div>
-                    <p>a complété le quiz de français avec un score de</p>
-                    <div class="certificate-score"><span id="certificate-score">0</span>/<span id="certificate-total">0</span></div>
-                    <p class="certificate-date">Date: <span id="certificate-date"></span></p>
-                </div>
-            </div>
+            <!-- Certificate section REMOVED -->
 
             <div class="social-share fade-in">
-                <p class="social-share-title">Partagez votre score :</p>
+                <p class="social-share-title">Share your score:</p> <!-- Text in English -->
                 <div class="copyable-text-container">
-                    <textarea id="share-text" class="copyable-text" readonly aria-label="Texte à partager">Just took this French quiz and got [SCORE]/[TOTAL]! 🇫🇷 Think you can beat my score? Try it here 👉 www.testyourfrench.com #FrenchChallenge #TestYourSkills</textarea>
-                    <button id="copy-btn" class="btn btn-sm" aria-label="Copier le texte de partage">
-                        <i class="fas fa-copy"></i> Copier
+                    <textarea id="share-text" class="copyable-text" readonly aria-label="Text to share">I scored [SCORE]/[TOTAL] ([ACCURACY]%) on the Test Your French Quiz! 🇫🇷 Try it out: https://www.testyourfrench.com #FrenchQuiz #TestYourFrench</textarea> <!-- Share text in English -->
+                    <button id="copy-btn" class="btn btn-sm" aria-label="Copy share text"> <!-- Label in English -->
+                        <i class="fas fa-copy"></i> Copy <!-- Button text in English -->
                     </button>
                 </div>
             </div>
 
             <div class="buttons">
                 <div class="button-group">
-                    <button id="restart-btn" class="btn btn-success" aria-label="Recommencer le quiz">
-                        <i class="fas fa-redo btn-icon"></i>Recommencer
+                    <button id="restart-btn" class="btn btn-success" aria-label="Restart quiz"> <!-- Label in English -->
+                        <i class="fas fa-redo btn-icon"></i>Restart <!-- Button text in English -->
                     </button>
                 </div>
                 <div class="button-group">
-                    <button id="export-btn" class="btn" aria-label="Exporter les résultats">
-                        <i class="fas fa-download btn-icon"></i>Exporter
+                    <button id="export-btn" class="btn" aria-label="Export results"> <!-- Label in English -->
+                        <i class="fas fa-download btn-icon"></i>Export <!-- Button text in English -->
                     </button>
-                    <button id="print-btn" class="btn" aria-label="Imprimer le certificat">
-                        <i class="fas fa-print btn-icon"></i>Imprimer
+                     <!-- Print button label changed as certificate is removed -->
+                    <button id="print-btn" class="btn" aria-label="Print results"> <!-- Label in English -->
+                        <i class="fas fa-print btn-icon"></i>Print <!-- Button text in English -->
                     </button>
                 </div>
             </div>
@@ -230,13 +222,13 @@
     <footer class="footer">
         <div class="footer-content">
             <a href="https://www.testyourfrench.com" class="footer-logo" target="_blank" rel="noopener">Test Your French</a>
-            <p class="footer-text">Made by Test Your French - Améliorez votre français dès aujourd'hui !</p>
+            <p class="footer-text">Made by Test Your French - Improve your French today!</p> <!-- Text in English -->
         </div>
     </footer>
 
-    <!-- =========== DEBUT DU SCRIPT PRINCIPAL DU QUIZ =========== -->
+    <!-- =========== START OF MAIN QUIZ SCRIPT =========== -->
     <script>
-        // Configuration des questions du quiz
+        // Quiz Questions Configuration (Remains the same - Questions are in English)
         const quizQuestions = [
              {
                 question: "How do you say \"My name is\"? (informal)",
@@ -273,14 +265,14 @@
                 options: ["Tu viens chez moi ?", "Tu vas loin ?", "Tu viens d'où ?", "Tu tiens ton chien ?"],
                 correctAnswer: "Tu viens d'où ?",
                 explanation: "<strong>\"Tu viens d'où ?\"</strong> <em>(Where are you from?)</em>",
-                audio: "audio/TYF_Lead_6.mp3" // Assurez-vous que ce chemin est correct
+                audio: "audio/TYF_Lead_6.mp3"
             },
             {
                 question: "Listen to this. What is she saying?",
                 options: ["Tu es étudiant ?", "Tu pars où ?", "Tu étudies à l'université ?", "Tu as étudié où ?"],
                 correctAnswer: "Tu as étudié où ?",
                 explanation: "<strong>\"Tu as étudié où ?\"</strong> <em>(Where did you study?)</em>",
-                audio: "audio/TYF_Lead_7.mp3" // Assurez-vous que ce chemin est correct
+                audio: "audio/TYF_Lead_7.mp3"
             },
             {
                 question: "Bonjour, c'est la première fois que je viens. Je ________ ? (fill the blank)",
@@ -302,7 +294,7 @@
             }
         ];
 
-        // État du quiz
+        // Quiz State Variables
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswers = [];
@@ -313,7 +305,7 @@
         let timerInterval = null;
         let totalTimeElapsed = 0;
 
-        // Éléments DOM
+        // DOM Elements
         const DOM = {
              screens: {
                 welcome: document.getElementById('welcome-screen'),
@@ -337,7 +329,7 @@
             results: {
                 score: document.getElementById('score'),
                 totalQuestions: document.getElementById('total-questions'),
-                message: document.getElementById('score-message'),
+                message: document.getElementById('score-message'), // Will contain level info
                 summary: document.getElementById('answers-summary'),
                 stats: {
                     accuracy: document.getElementById('accuracy'),
@@ -345,13 +337,7 @@
                     fastestAnswer: document.getElementById('fastest-answer'),
                     slowestAnswer: document.getElementById('slowest-answer')
                 },
-                certificate: {
-                    container: document.getElementById('certificate'),
-                    score: document.getElementById('certificate-score'),
-                    total: document.getElementById('certificate-total'),
-                    date: document.getElementById('certificate-date'),
-                    name: document.getElementById('participant-name')
-                },
+                // Certificate removed
                 shareText: document.getElementById('share-text')
             },
             buttons: {
@@ -367,7 +353,8 @@
             questionCount: document.getElementById('question-count')
         };
 
-        // Initialisation au chargement de la page
+        // === Rest of the JavaScript Code (Identical logic, but UI strings updated) ===
+
         document.addEventListener('DOMContentLoaded', function() {
             DOM.questionCount.textContent = quizQuestions.length;
             initializeArrays();
@@ -383,14 +370,12 @@
             });
         });
 
-        // Initialise les tableaux d'état
         function initializeArrays() {
             selectedAnswers = Array(quizQuestions.length).fill(null);
             questionStatus = Array(quizQuestions.length).fill(null);
             questionTimes = Array(quizQuestions.length).fill(0);
         }
 
-        // Configure tous les écouteurs d'événements
         function setupEventListeners() {
             DOM.buttons.start.addEventListener('click', initQuiz);
             DOM.buttons.prev.addEventListener('click', goToPreviousQuestion);
@@ -409,7 +394,6 @@
             DOM.buttons.copy.addEventListener('click', copyShareText);
         }
 
-        // Démarre le quiz
         function initQuiz() {
             currentQuestion = 0;
             score = 0;
@@ -419,6 +403,7 @@
             if (timerEnabled) {
                 DOM.quiz.timer.container.classList.remove('hidden', 'timer-hidden');
                 DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Hide timer'); // English aria-label
                 startTimer();
             } else {
                 DOM.quiz.timer.container.classList.add('hidden');
@@ -442,7 +427,6 @@
             updateButtons();
         }
 
-        // Fonctions du timer
         function startTimer() {
             if (!timerEnabled) return;
             startTime = new Date();
@@ -490,20 +474,20 @@
             const isHidden = timerContainer.classList.toggle('timer-hidden');
             if (isHidden) {
                 DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye"></i>';
-                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Afficher le chronomètre');
+                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Show timer'); // English aria-label
             } else {
                 DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
-                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Masquer le chronomètre');
+                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Hide timer'); // English aria-label
             }
         }
 
-        // Crée les étapes de progression
         function createProgressSteps() {
             DOM.quiz.progress.steps.innerHTML = '';
             for (let i = 0; i < quizQuestions.length; i++) {
                 const step = document.createElement('div');
                 step.className = 'step';
                 step.textContent = i + 1;
+                 // ARIA labels updated to English
                 step.setAttribute('aria-label', `Question ${i + 1}`);
 
                 if (i === currentQuestion) {
@@ -511,18 +495,17 @@
                     step.setAttribute('aria-current', 'true');
                 } else if (questionStatus[i] === 'correct') {
                     step.classList.add('completed');
-                    step.setAttribute('aria-label', `Question ${i + 1} - Correcte`);
+                    step.setAttribute('aria-label', `Question ${i + 1} - Correct`);
                 } else if (questionStatus[i] === 'incorrect') {
                     step.classList.add('error');
-                    step.setAttribute('aria-label', `Question ${i + 1} - Incorrecte`);
+                    step.setAttribute('aria-label', `Question ${i + 1} - Incorrect`);
                 } else {
-                    step.setAttribute('aria-label', `Question ${i + 1} - Non répondue`);
+                    step.setAttribute('aria-label', `Question ${i + 1} - Unanswered`);
                 }
                 DOM.quiz.progress.steps.appendChild(step);
             }
         }
 
-        // Affiche la question actuelle
         function showQuestion() {
              if (timerEnabled && !questionStatus[currentQuestion]) {
                 startTime = new Date();
@@ -535,7 +518,7 @@
             const question = quizQuestions[currentQuestion];
             let questionHTML = `
                 <fieldset class="question-container fade-in" id="question-${currentQuestion + 1}" aria-labelledby="question-text-${currentQuestion + 1}">
-                    <legend class="sr-only">Question ${currentQuestion + 1} sur ${quizQuestions.length}</legend>
+                    <legend class="sr-only">Question ${currentQuestion + 1} of ${quizQuestions.length}</legend> <!-- Text in English -->
                     <p class="question-text" id="question-text-${currentQuestion + 1}">${question.question}</p>
             `;
 
@@ -544,7 +527,7 @@
                     <div class="audio-container">
                         <audio controls preload="metadata">
                             <source src="${question.audio}" type="audio/mpeg">
-                            Votre navigateur ne supporte pas l'élément audio.
+                            Your browser does not support the audio element. <!-- Fallback text in English -->
                         </audio>
                     </div>
                 `;
@@ -608,8 +591,6 @@
              }, 100);
         }
 
-
-        // Attache les écouteurs d'événements aux options
         function attachOptionEventListeners() {
             const options = DOM.quiz.container.querySelectorAll('.option');
             options.forEach(option => {
@@ -629,16 +610,15 @@
         }
 
         function handleOptionSelection(event) {
-            selectOption(event.target);
+            selectOption(event.target.closest('.option'));
         }
         function handleOptionKeydown(event) {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                selectOption(event.target);
+                selectOption(event.target.closest('.option'));
             }
         }
 
-        // Gère la sélection d'une option
         function selectOption(selectedOptionElement) {
             if (!selectedOptionElement || !selectedOptionElement.classList.contains('option') || questionStatus[currentQuestion]) return;
 
@@ -684,12 +664,13 @@
             updateFeedback();
             updateButtons();
             createProgressSteps();
-            updateProgressBar(); // Mettre à jour la barre après réponse
+            updateProgressBar();
 
-            DOM.buttons.next.focus();
+            const nextFocus = DOM.buttons.submit.style.display !== 'none' ? DOM.buttons.submit : DOM.buttons.next;
+            nextFocus.focus();
         }
 
-        // Met à jour le feedback après une réponse
+        // Updated Feedback function with English text
         function updateFeedback() {
             const question = quizQuestions[currentQuestion];
             const status = questionStatus[currentQuestion];
@@ -699,15 +680,15 @@
             if (status === 'correct') {
                 feedbackHTML = `
                     <div class="feedback-correct">
-                        <h3><i class="fas fa-check-circle"></i> Correct !</h3>
+                        <h3><i class="fas fa-check-circle"></i> Correct!</h3> <!-- Text in English -->
                         <p>${question.explanation || ''}</p>
                     </div>
                 `;
             } else {
                 feedbackHTML = `
                     <div class="feedback-incorrect">
-                        <h3><i class="fas fa-info-circle"></i> Information</h3>
-                        <p>La bonne réponse était : <strong>${question.correctAnswer}</strong></p>
+                        <h3><i class="fas fa-info-circle"></i> Information</h3> <!-- Title in English -->
+                        <p>The correct answer was: <strong>${question.correctAnswer}</strong></p> <!-- Text in English -->
                         <p>${question.explanation || ''}</p>
                     </div>
                 `;
@@ -716,7 +697,6 @@
             DOM.quiz.feedback.classList.add('visible');
         }
 
-        // Met à jour l'état des boutons de navigation
         function updateButtons() {
             DOM.buttons.prev.disabled = currentQuestion === 0;
             const isAnswered = selectedAnswers[currentQuestion] !== null;
@@ -732,14 +712,12 @@
             }
         }
 
-        // Met à jour la barre de progression
         function updateProgressBar() {
             const answeredCount = selectedAnswers.filter(a => a !== null).length;
             const progressPercentage = (answeredCount / quizQuestions.length) * 100;
             DOM.quiz.progress.bar.style.width = `${progressPercentage}%`;
         }
 
-        // Passe à la question suivante
         function goToNextQuestion() {
             if (currentQuestion < quizQuestions.length - 1) {
                 currentQuestion++;
@@ -749,7 +727,6 @@
             }
         }
 
-        // Revient à la question précédente
         function goToPreviousQuestion() {
              if (currentQuestion > 0) {
                  startTime = null;
@@ -758,7 +735,7 @@
             }
         }
 
-        // Affiche l'écran des résultats
+        // Updated showResults function with English level descriptions
         function showResults() {
             stopTimer();
              if (timerEnabled && startTime && questionTimes[currentQuestion] === 0) {
@@ -778,27 +755,44 @@
             DOM.results.stats.fastestAnswer.textContent = fastest !== 'N/A' ? `${fastest}s` : fastest;
             DOM.results.stats.slowestAnswer.textContent = slowest !== 'N/A' ? `${slowest}s` : slowest;
 
-            let message = '';
-            if (accuracy === 100) message = "🎉 Excellent ! Score parfait !";
-            else if (accuracy >= 80) message = "👍 Très bien ! Vous maîtrisez bien le sujet.";
-            else if (accuracy >= 50) message = "🙂 Pas mal ! Continuez à pratiquer.";
-            else message = "💪 Ne baissez pas les bras ! Chaque erreur est une leçon.";
-            DOM.results.message.innerHTML = `<p>${message}</p>`;
+            // Determine Level based on score (using English descriptions)
+            let level = '';
+            let levelDescription = '';
+            const numberOfQuestions = quizQuestions.length;
 
-            displaySummary();
-
-            DOM.results.certificate.score.textContent = score;
-            DOM.results.certificate.total.textContent = quizQuestions.length;
-            DOM.results.certificate.date.textContent = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-            if (score >= Math.ceil(quizQuestions.length * 0.6)) {
-                DOM.results.certificate.container.classList.remove('hidden');
+            // --- Adjust thresholds and descriptions as needed ---
+            if (score >= 8) {
+                level = 'A2';
+                levelDescription = 'You have mastered the basics of French communication. You can introduce yourself, ask for directions, and understand simple phrases used in everyday life.';
+            } else if (score >= 6) {
+                level = 'A1+';
+                levelDescription = 'You know the fundamentals and are approaching the A2 level. With a bit more practice on everyday expressions, you\'ll soon reach the A2 level.';
+            } else if (score >= 4) {
+                level = 'A1';
+                levelDescription = 'You know some basic expressions, but you still need to practice to reach level A2. Keep learning!';
+            } else if (score >= 2) {
+                level = 'Pre-A1';
+                levelDescription = 'You have started learning French. With more practice on basic expressions, you\'ll progress to A1 level.';
             } else {
-                DOM.results.certificate.container.classList.add('hidden');
+                level = 'Beginner';
+                levelDescription = 'You\'re just beginning with French. Don\'t worry! Everyone starts somewhere. Keep practicing!';
             }
 
-             const shareTextTemplate = `J'ai obtenu ${score}/${quizQuestions.length} (${accuracy}%) au Quiz Test Your French ! 🇫🇷 Essayez-le : https://www.testyourfrench.com #FrenchQuiz #TestYourFrench`;
-             DOM.results.shareText.value = shareTextTemplate;
+            // Display Level Information
+            DOM.results.message.innerHTML = `
+                <h3>Estimated Level: ${level}</h3> <!-- Title in English -->
+                <p>${levelDescription}</p>
+            `;
 
+            displaySummary(); // Display answer details
+
+            // Certificate section is removed
+
+            // Update share text (already updated to English and correct URL)
+             const shareTextTemplate = `I scored ${score}/${quizQuestions.length} (${accuracy}%) on the Test Your French Quiz! 🇫🇷 Try it out: https://www.testyourfrench.com #FrenchQuiz #TestYourFrench`;
+            DOM.results.shareText.value = shareTextTemplate;
+
+            // Transition screens
             DOM.screens.quiz.classList.add('fade-out');
             setTimeout(() => {
                 DOM.screens.quiz.classList.add('hidden');
@@ -809,7 +803,7 @@
             }, 300);
         }
 
-        // Génère et affiche le résumé des réponses
+        // Updated displaySummary with English text
         function displaySummary() {
             let summaryHTML = '';
             quizQuestions.forEach((q, index) => {
@@ -825,17 +819,16 @@
                            ${index + 1}. ${q.question}
                         </div>
                         <div class="summary-answer ${answerClass}">
-                            ${userAnswer !== null ? `<span>${userAnswer}</span>` : 'Non répondu'}
+                            ${userAnswer !== null ? `<span>${userAnswer}</span>` : 'Not Answered'} <!-- Text in English -->
                             <i class="${iconClass}" aria-hidden="true"></i>
                         </div>
-                        ${!isCorrect && userAnswer !== null ? `<div class="summary-correct-answer">Bonne réponse: ${q.correctAnswer}</div>` : ''}
+                        ${!isCorrect && userAnswer !== null ? `<div class="summary-correct-answer">Correct answer: ${q.correctAnswer}</div>` : ''} <!-- Text in English -->
                     </div>
                 `;
             });
             DOM.results.summary.innerHTML = summaryHTML;
         }
 
-        // Recommence le quiz
         function restartQuiz() {
             DOM.screens.result.classList.add('fade-out');
             setTimeout(() => {
@@ -843,71 +836,69 @@
                 DOM.screens.result.classList.remove('fade-out');
                 DOM.screens.welcome.classList.remove('hidden');
                 DOM.screens.welcome.classList.add('fade-in');
-                // Reset checkbox state
                 DOM.quiz.timer.checkbox.checked = true;
                 timerEnabled = true;
             }, 300);
         }
 
-        // Copie le texte de partage
-        async function copyShareText() {
+        // Updated copyShareText with English feedback
+       async function copyShareText() {
             try {
                 await navigator.clipboard.writeText(DOM.results.shareText.value);
                 const originalText = DOM.buttons.copy.innerHTML;
-                DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copied!'; // Feedback in English
                 DOM.buttons.copy.disabled = true;
                 setTimeout(() => {
                     DOM.buttons.copy.innerHTML = originalText;
                     DOM.buttons.copy.disabled = false;
                 }, 2000);
             } catch (err) {
-                console.error('Erreur de copie:', err);
+                console.error('Copy failed:', err); // Log in English
                  DOM.results.shareText.select();
                  DOM.results.shareText.setSelectionRange(0, 99999);
                  try {
                     document.execCommand('copy');
                      const originalText = DOM.buttons.copy.innerHTML;
-                    DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                    DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copied!'; // Feedback in English
                     DOM.buttons.copy.disabled = true;
                     setTimeout(() => {
                         DOM.buttons.copy.innerHTML = originalText;
                         DOM.buttons.copy.disabled = false;
                     }, 2000);
                  } catch (execErr) {
-                    alert("Impossible de copier automatiquement. Veuillez copier manuellement le texte.");
+                    alert("Could not copy automatically. Please copy the text manually."); // Alert in English
                  }
             }
         }
 
-
-        // Exporte les résultats (simplifié en texte)
+        // Updated exportResults with English text
         function exportResults() {
-            let exportText = `Résultats du Quiz Français - ${new Date().toLocaleString('fr-FR')}\n\n`;
-            exportText += `Score Final: ${score}/${quizQuestions.length} (${Math.round((score / quizQuestions.length) * 100)}%)\n`;
+            let exportText = `French Quiz Results - ${new Date().toLocaleString('en-US')}\n\n`; // Header in English
+            exportText += `Final Score: ${score}/${quizQuestions.length} (${Math.round((score / quizQuestions.length) * 100)}%)\n`;
              if(timerEnabled) {
                 const validTimes = questionTimes.filter(t => t > 0);
                 const avgTime = validTimes.length ? (validTimes.reduce((a, b) => a + b, 0) / validTimes.length).toFixed(1) : 'N/A';
-                exportText += `Temps moyen par question: ${avgTime !== 'N/A' ? avgTime + 's' : avgTime}\n`;
-                exportText += `Temps total: ${totalTimeElapsed}s\n`;
+                exportText += `Average time per question: ${avgTime !== 'N/A' ? avgTime + 's' : avgTime}\n`; // Text in English
+                exportText += `Total time: ${totalTimeElapsed}s\n`; // Text in English
              }
-            exportText += `\n--- Détail des réponses ---\n`;
+            exportText += `\n--- Answer Details ---\n`; // Header in English
 
             quizQuestions.forEach((q, index) => {
                 exportText += `\nQ${index + 1}: ${q.question}\n`;
-                exportText += `   Votre réponse: ${selectedAnswers[index] || 'Non répondu'}\n`;
+                exportText += `   Your answer: ${selectedAnswers[index] || 'Not Answered'}\n`; // Text in English
                 if (questionStatus[index] === 'incorrect') {
-                    exportText += `   Bonne réponse: ${q.correctAnswer}\n`;
+                    exportText += `   Correct answer: ${q.correctAnswer}\n`; // Text in English
                 }
-                exportText += `   Statut: ${questionStatus[index] === 'correct' ? 'Correct' : (questionStatus[index] === 'incorrect' ? 'Incorrect' : 'Non répondu')}\n`;
+                exportText += `   Status: ${questionStatus[index] === 'correct' ? 'Correct' : (questionStatus[index] === 'incorrect' ? 'Incorrect' : 'Not Answered')}\n`; // Text in English
                 if (timerEnabled && questionTimes[index] > 0) {
-                    exportText += `   Temps pris: ${questionTimes[index]}s\n`;
+                    exportText += `   Time taken: ${questionTimes[index]}s\n`; // Text in English
                 }
             });
 
             const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `resultats_quiz_francais_${new Date().toISOString().slice(0,10)}.txt`;
+            link.download = `french_quiz_results_${new Date().toISOString().slice(0,10)}.txt`; // Filename in English
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
@@ -915,17 +906,17 @@
             URL.revokeObjectURL(link.href);
         }
 
-        // Imprime les résultats/certificat
         function printResults() {
             window.print();
         }
 
     </script>
-    <!-- =========== FIN DU SCRIPT PRINCIPAL DU QUIZ =========== -->
+    <!-- =========== END OF MAIN QUIZ SCRIPT =========== -->
 
-    <!-- Script pour les notifications PWA (Optionnel) -->
-    <!-- Le code JS pour gérer beforeinstallprompt et les messages SW est inclus ci-dessus -->
-    <!-- Vous pouvez ajouter ici le code pour afficher les notifications si nécessaire -->
+    <!-- Optional PWA Notification Script Area -->
+    <script>
+        // (PWA install/offline notification functions can go here if needed)
+    </script>
 
 </body>
 </html>
