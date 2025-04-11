@@ -1,6 +1,7 @@
 /* 
  * style.css - Feuille de style optimisée pour le quiz de français
  * Avec support pour mode sombre, accessibilité et PWA
+ * Version Mise à Jour
  */
  
 /* Variables pour une cohérence et facilité de maintenance */
@@ -11,8 +12,8 @@
     --primary-lighter: #e8eff9;
     --correct: #4CAF50;
     --correct-light: rgba(76, 175, 80, 0.1);
-    --incorrect: #ca1f2d;
-    --incorrect-light: rgba(202, 31, 45, 0.1);
+    --incorrect: #ca1f2d; /* Variable conservée même si moins utilisée */
+    --incorrect-light: rgba(202, 31, 45, 0.1); /* Variable conservée */
     --neutral: #95a5a6;
     --bg: #f9f9f9;
     --card-bg: white;
@@ -47,6 +48,10 @@
     padding: 0;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -71,17 +76,27 @@ textarea:focus,
 .cta-button:focus {
     outline: 3px solid var(--primary-light);
     outline-offset: 2px;
+    box-shadow: 0 0 0 3px var(--primary-lighter); /* Ajout ombre pour visibilité */
 }
+/* Style pour le focus sur les checkbox/radio */
+input[type="checkbox"]:focus + span,
+input[type="radio"]:focus + span {
+     outline: 3px solid var(--primary-light);
+     outline-offset: 2px;
+}
+
 
 /* Support de prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
     }
 }
 
@@ -110,6 +125,18 @@ textarea:focus,
     animation: fadeOut 0.3s ease forwards;
 }
 
+/* Marges utilitaires */
+.mt-6 { margin-top: 2.5rem; } /* ~40px */
+.mb-4 { margin-bottom: 1rem; } /* ~16px */
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+
+/* Flex Center */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Classe utilitaire pour les éléments de type carte */
 .card {
     background-color: var(--card-bg);
@@ -117,7 +144,7 @@ textarea:focus,
     padding: var(--spacing);
     box-shadow: var(--shadow-sm);
     margin-bottom: var(--spacing);
-    transition: var(--transition);
+    transition: background-color var(--transition), box-shadow var(--transition);
 }
 
 /* Conteneur principal */
@@ -128,60 +155,86 @@ textarea:focus,
     box-shadow: var(--shadow);
     flex: 1;
     margin-bottom: var(--spacing);
-    transition: var(--transition);
+    transition: background-color var(--transition), box-shadow var(--transition);
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden; /* Empêcher débordement horizontal */
 }
 
-/* Logo du quiz */
+/* --- Écran d'accueil --- */
+
+#welcome-screen h1 {
+    margin-top: var(--spacing-sm); /* Espace après logo */
+}
+
 .quiz-logo {
     text-align: center;
     margin-bottom: var(--spacing);
 }
 
 .quiz-logo img {
-    max-width: 150px;
+    max-width: 120px; /* Légèrement réduit pour équilibre */
     height: auto;
+    border-radius: 50%; /* Icône ronde */
+    box-shadow: var(--shadow-sm);
 }
 
-/* Écrans */
-.screen {
+.test-details {
+    margin: var(--spacing-md) auto;
+    padding: var(--spacing) var(--spacing-md);
+    background-color: var(--primary-lighter);
+    border-radius: var(--radius);
+    max-width: 400px; /* Limiter largeur */
+    text-align: left;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text);
+    font-size: var(--font-size-sm);
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.detail-item i {
+    color: var(--correct);
+    margin-right: var(--spacing);
+    width: 1.2em; /* Assurer alignement */
     text-align: center;
-    padding: var(--spacing) 0;
 }
 
-/* Typographie */
-h1, h2, h3, h4 {
-    color: var(--primary);
-    line-height: 1.2;
-    margin-bottom: var(--spacing);
+.timer-option {
+    margin: var(--spacing-md) 0;
 }
 
-h1 {
-    font-size: var(--font-size-xl);
-    text-align: center;
-    margin-bottom: var(--spacing-md);
-}
-
-h2 {
-    font-size: var(--font-size-md);
-    margin-bottom: var(--spacing);
-}
-
-.subtitle {
+.timer-option label {
+    cursor: pointer;
+    font-size: var(--font-size-sm);
     color: var(--text-light);
-    text-align: center;
-    margin-bottom: var(--spacing-md);
+}
+
+.timer-option input[type="checkbox"] {
+    margin-right: var(--spacing-sm);
+    accent-color: var(--primary); /* Couleur de la coche */
+     width: 16px;
+     height: 16px;
+}
+
+#start-btn {
+    display: block;
+    margin: var(--spacing-md) auto var(--spacing) auto;
+    min-width: 200px;
+    padding: var(--spacing) var(--spacing-md); /* Plus grand */
     font-size: var(--font-size);
 }
 
-/* Centrer le bouton commencer */
-#start-btn {
-    display: block;
-    margin: 0 auto;
-    margin-top: var(--spacing);
-    margin-bottom: var(--spacing);
-    min-width: 200px;
+/* --- Écran du Quiz --- */
+
+#quiz-screen h1 {
+     font-size: var(--font-size-lg); /* Titre moins imposant que sur l'accueil */
 }
 
 /* Question et options */
@@ -189,18 +242,28 @@ h2 {
     margin-bottom: var(--spacing);
     padding: var(--spacing);
     border-radius: var(--radius);
-    background-color: var(--bg); /* Utilise le fond général, clair ou sombre */
+    background-color: var(--bg);
     border-left: 4px solid var(--primary);
     box-shadow: var(--shadow-sm);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-fast);
     transform-origin: center;
+    text-align: left; /* Aligner texte question/options à gauche */
+}
+/* Enlever la bordure de fieldset */
+.question-container fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.question-container legend {
+     /* Style pour sr-only déjà présent */
 }
 
 .question-text {
     font-weight: 500;
     margin-bottom: var(--spacing);
     line-height: 1.5;
-    color: var(--text); /* Assure que le texte de la question utilise la couleur principale du thème */
+    color: var(--text);
 }
 
 /* Lecteur audio */
@@ -214,6 +277,7 @@ audio {
     max-width: 400px;
     border-radius: 24px;
     margin: var(--spacing-sm) 0;
+    /* Styles par défaut du navigateur souvent suffisants */
 }
 
 .options {
@@ -221,52 +285,33 @@ audio {
 }
 
 .option {
-    display: block;
+    display: block; /* Changed from flex for simpler text alignment */
+    text-align: left; /* Ensure text starts left */
     margin: var(--spacing-sm) 0;
     padding: var(--spacing);
-    background-color: var(--primary-lighter); /* Fond légèrement coloré pour se distinguer */
-    color: var(--text); /* Texte principal du thème */
+    background-color: var(--primary-lighter);
+    color: var(--text);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition);
     border: 2px solid transparent;
     position: relative;
     overflow: hidden;
-    animation: slide-up 0.3s ease both;
-    min-height: 44px; /* Assure une taille minimum pour cible tactile */
+    /* animation: slide-up 0.3s ease both; - Animation on every load might be too much */
+    min-height: 44px;
 }
 
-/* Délai différent pour chaque option */
-.option:nth-child(1) { animation-delay: 0.1s; }
-.option:nth-child(2) { animation-delay: 0.2s; }
-.option:nth-child(3) { animation-delay: 0.3s; }
-.option:nth-child(4) { animation-delay: 0.4s; }
-
-.option:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.05); /* Effet léger au survol */
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    pointer-events: none;
-}
-
-.option:hover {
-    background-color: var(--primary-light); /* Couleur plus prononcée au survol */
-    color: var(--text-white); /* Texte blanc pour contraste sur fond plus foncé */
+/* Styles de survol/sélection/correction/incorrect */
+.option:not([style*="pointer-events: none"]):hover { /* Ne pas appliquer hover si désactivé */
+    background-color: var(--primary-light);
+    color: var(--text-white);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
-
-.option:hover:before {
+.option:not([style*="pointer-events: none"]):hover:before {
     transform: translateX(0);
 }
-
-.option:active {
+.option:not([style*="pointer-events: none"]):active {
     transform: translateY(0);
 }
 
@@ -281,35 +326,36 @@ audio {
     background-color: var(--correct);
     color: var(--text-white);
     border-color: var(--correct);
-    animation: pulse 0.5s ease;
+    /* animation: pulse 0.5s ease; - Animation can be distracting */
 }
 
-.option.correct:after {
-    content: "✓";
+/* Icône de validation/erreur (partagée) */
+.option.correct:after,
+.option.incorrect:after {
+    content: "✓"; /* Utilise le même symbole comme demandé */
     position: absolute;
     right: var(--spacing);
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.5em;
+    font-weight: bold;
 }
 
-/* Utiliser même couleur principale pour option incorrecte */
+/* Spécifique à l'option incorrecte (basé sur vos modifs) */
 .option.incorrect {
-    background-color: var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
+    background-color: var(--primary); /* Fond bleu comme demandé */
     color: var(--text-white);
     border-color: var(--primary);
 }
 
-.option.incorrect:after {
-    content: "✓"; /* Utiliser le même symbole que correct */
-    position: absolute;
-    right: var(--spacing);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5em;
+/* Désactiver interactions sur options répondues */
+.option[style*="pointer-events: none"] {
+    cursor: default;
+    opacity: 0.8; /* Légèrement estompé */
 }
 
-/* Feedback après réponse */
+
+/* Feedback après réponse (basé sur vos modifs) */
 .feedback-container {
     margin-top: var(--spacing);
     padding: var(--spacing);
@@ -319,11 +365,12 @@ audio {
     max-height: 0;
     overflow: hidden;
     transition: all 0.5s ease;
+    text-align: left; /* Aligner texte feedback */
 }
 
 .feedback-container.visible {
     opacity: 1;
-    max-height: 500px;
+    max-height: 500px; /* Augmenté pour explications longues */
     margin-bottom: var(--spacing);
 }
 
@@ -331,14 +378,14 @@ audio {
     background-color: var(--correct-light);
     border-left: 4px solid var(--correct);
     padding: var(--spacing);
-    color: var(--text); /* Assure lisibilité en mode clair/sombre */
+    color: var(--text);
 }
 
 .feedback-incorrect {
-    background-color: var(--correct-light); /* Utiliser le même fond que correct */
-    border-left: 4px solid var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
+    background-color: var(--correct-light); /* Fond vert pâle comme demandé */
+    border-left: 4px solid var(--primary); /* Bordure bleue comme demandé */
     padding: var(--spacing);
-    color: var(--text); /* Assure lisibilité en mode clair/sombre */
+    color: var(--text);
 }
 
 .feedback-container h3 {
@@ -346,10 +393,12 @@ audio {
     margin-bottom: var(--spacing-sm);
     display: flex;
     align-items: center;
+    font-size: var(--font-size);
 }
 
 .feedback-container h3 i {
     margin-right: var(--spacing-sm);
+    font-size: 1.2em; /* Icône légèrement plus grande */
 }
 
 .feedback-correct h3 {
@@ -357,17 +406,31 @@ audio {
 }
 
 .feedback-incorrect h3 {
-    color: var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
+    color: var(--primary); /* Titre bleu comme demandé */
+}
+.feedback-container p {
+    margin-bottom: var(--spacing-sm);
+}
+.feedback-container p:last-child {
+    margin-bottom: 0;
+}
+.feedback-container strong { /* Met en évidence la bonne réponse */
+    color: var(--correct);
+    font-weight: 600;
+}
+.feedback-incorrect strong { /* S'assure que la bonne réponse reste verte */
+     color: var(--correct);
 }
 
-/* Boutons */
+
+/* Boutons (Globaux) */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: var(--spacing-sm) var(--spacing);
     background-color: var(--primary);
-    color: var(--text-white); /* Texte toujours blanc sur fond primaire */
+    color: var(--text-white);
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -375,15 +438,14 @@ audio {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition);
     position: relative;
     overflow: hidden;
     text-decoration: none;
     min-height: 44px;
     min-width: 44px;
 }
-
-.btn:before {
+.btn:before { /* Effet hover subtil */
     content: '';
     position: absolute;
     top: 0;
@@ -391,55 +453,53 @@ audio {
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transition);
+    pointer-events: none;
 }
-
 .btn:hover {
     background-color: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-
 .btn:hover:before {
-    transform: translateX(0);
+    transform: scaleX(1);
 }
-
 .btn:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 .btn:disabled {
     background-color: var(--neutral);
-    color: rgba(255, 255, 255, 0.7); /* Texte blanc légèrement grisé pour bouton désactivé */
+    color: rgba(255, 255, 255, 0.7);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+    opacity: 0.7;
 }
-
 .btn-icon {
     margin-right: var(--spacing-sm);
 }
-
+/* Icône à droite */
+.btn i:last-child:not(.btn-icon) {
+    margin-left: var(--spacing-sm);
+    margin-right: 0;
+}
 .btn-secondary {
     background-color: #e0e0e0;
-    color: var(--text); /* Couleur texte standard pour fond clair */
+    color: var(--text);
 }
-
 .btn-secondary:hover {
     background-color: #d0d0d0;
 }
-
 .btn-success {
     background-color: var(--correct);
-    color: var(--text-white); /* Texte blanc sur fond vert */
+    color: var(--text-white);
 }
-
 .btn-success:hover {
-    background-color: #3d8b40;
+    background-color: #3d8b40; /* Vert plus foncé */
 }
-
 .btn-sm {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: var(--font-size-xs);
@@ -452,7 +512,7 @@ audio {
 
 .progress-bar {
     height: 8px;
-    background-color: var(--primary-lighter); /* Fond légèrement coloré */
+    background-color: var(--primary-lighter);
     border-radius: 4px;
     margin-bottom: var(--spacing);
     overflow: hidden;
@@ -462,13 +522,14 @@ audio {
     height: 100%;
     background-color: var(--primary);
     width: 0%;
-    transition: width 0.5s ease;
+    transition: width 0.5s ease-in-out; /* Transition plus douce */
 }
 
 .progress-steps {
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Permet le retour à la ligne */
+    gap: var(--spacing-xs); /* Espace entre les étapes */
     margin-bottom: var(--spacing);
 }
 
@@ -476,21 +537,22 @@ audio {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: var(--neutral); /* Couleur neutre par défaut */
+    background-color: var(--neutral);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-xs);
-    color: var(--text-white); /* Texte blanc sur fond neutre */
+    font-weight: bold;
+    color: var(--text-white);
     position: relative;
-    margin-bottom: var(--spacing-sm);
-    transition: all 0.3s ease;
+    /* margin-bottom: var(--spacing-sm); - Remplacé par gap */
+    transition: all var(--transition-fast);
 }
 
 .step.active {
     background-color: var(--primary);
     color: var(--text-white);
-    transform: scale(1.1);
+    transform: scale(1.15); /* Plus prononcé */
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
@@ -499,10 +561,11 @@ audio {
     color: var(--text-white);
 }
 
-/* Modification: utiliser gris au lieu de rouge pour questions incorrectes */
+/* Modification: utiliser gris au lieu de rouge (votre modif) */
 .step.error {
-    background-color: #6c757d; /* Gris neutre au lieu de rouge */
+    background-color: #6c757d;
     color: var(--text-white);
+     opacity: 0.8; /* Indique une erreur sans être trop vif */
 }
 
 /* Timer */
@@ -512,18 +575,32 @@ audio {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 44px; /* Hauteur constante même si caché */
+    transition: opacity var(--transition);
+}
+.timer-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.timer-container.timer-hidden #timer-value {
+    opacity: 0; /* Cache la valeur mais garde l'icône */
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
 }
 
 .timer {
     font-size: var(--font-size);
     font-weight: bold;
-    background-color: var(--primary-lighter); /* Fond légèrement coloré */
-    color: var(--text); /* Couleur texte standard */
+    background-color: var(--primary-lighter);
+    color: var(--text);
     padding: var(--spacing-sm) var(--spacing);
     border-radius: 20px;
-    display: flex;
+    display: inline-flex; /* inline-flex pour s'adapter */
     align-items: center;
     box-shadow: var(--shadow-sm);
+    transition: opacity var(--transition);
 }
 
 .timer i {
@@ -531,84 +608,44 @@ audio {
     color: var(--primary);
 }
 
+#timer-value {
+    min-width: 4ch; /* Espace pour MM:SS */
+    text-align: right;
+    transition: all var(--transition);
+}
+
 .timer-toggle {
     background: none;
     border: none;
     color: var(--text-light);
     cursor: pointer;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size); /* Taille icône */
     padding: var(--spacing-xs);
     margin-left: var(--spacing-sm);
-    min-height: 44px;
+    min-height: 44px; /* Cible tactile */
     min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.timer-toggle:hover {
+    color: var(--primary);
 }
 
-/* Certificat */
-.certificate {
-    border: 2px solid var(--primary);
-    padding: var(--spacing-md);
+
+/* --- Écran des Résultats --- */
+
+.result-container {
+    /* Styles de base pour l'écran des résultats */
+    padding: var(--spacing) 0;
     text-align: center;
-    margin-top: var(--spacing-md);
-    background-color: var(--card-bg);
-    position: relative;
-    box-shadow: var(--shadow);
-    border-radius: var(--radius);
-    animation: fadeIn 1s ease;
-    color: var(--text);
+    /* Sera affiché via JS */
 }
 
-.certificate:before {
-    content: "";
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    border: 1px solid var(--primary);
-    opacity: 0.3;
-    pointer-events: none;
+.result-container h1 {
+     font-size: var(--font-size-xl);
 }
 
-.certificate h2 {
-    color: var(--primary);
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing);
-}
-
-.certificate-content {
-    margin: var(--spacing-md) 0;
-    line-height: 1.8;
-}
-
-.certificate-name {
-    font-size: var(--font-size-lg);
-    font-weight: bold;
-    color: var(--primary);
-    border-bottom: 2px solid var(--primary);
-    display: inline-block;
-    padding: 0 var(--spacing) 5px;
-    margin: var(--spacing) 0;
-}
-
-.certificate-score {
-    font-size: var(--font-size-md);
-    font-weight: bold;
-    color: var(--primary);
-    margin: var(--spacing) 0;
-}
-
-.certificate-level {
-    font-weight: bold;
-    color: var(--text);
-}
-
-.certificate-date {
-    font-style: italic;
-    margin-top: var(--spacing);
-    color: var(--text-light);
-}
-
-/* Résumé des résultats */
 .score-highlight {
     font-size: var(--font-size-xxl);
     font-weight: bold;
@@ -616,66 +653,37 @@ audio {
     margin: var(--spacing) 0;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
 }
-
-.summary-container {
-    max-width: 600px;
-    margin: 0 auto;
+.score-highlight span {
+    /* Style individuel si besoin */
 }
 
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid var(--primary-lighter);
-    align-items: center;
+#score-message {
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size);
+    color: var(--text-light);
+}
+#score-message p {
+    margin: 0;
 }
 
-.summary-item:last-child {
-    border-bottom: none;
-}
-
-.summary-question {
-    flex: 1;
-    text-align: left;
-    padding-right: var(--spacing);
-    color: var(--text);
-}
-
-.summary-answer {
-    min-width: 100px;
-    text-align: right;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.summary-answer i {
-    margin-left: var(--spacing-sm);
-    font-size: 1.2em;
-}
-
-.correct-answer {
-    color: var(--correct);
-}
-
-/* Utiliser couleur principale au lieu de rouge */
-.wrong-answer {
-    color: var(--primary);
-}
 
 /* Statistiques */
 .stats-container {
-    background-color: var(--card-bg);
+    background-color: var(--bg); /* Fond légèrement différent */
     border-radius: var(--radius);
     padding: var(--spacing);
     margin: var(--spacing-md) 0;
     box-shadow: var(--shadow-sm);
+    text-align: left; /* Aligner titre "Votre Performance" */
+}
+.stats-container h2 {
+    text-align: center; /* Centrer titre section */
+    font-size: var(--font-size-md);
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive */
     gap: var(--spacing);
     margin-top: var(--spacing);
 }
@@ -683,9 +691,10 @@ audio {
 .stat-item {
     text-align: center;
     padding: var(--spacing);
-    background-color: var(--bg);
+    background-color: var(--card-bg); /* Fond carte standard */
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    border-left: 3px solid var(--primary-light); /* Accent couleur */
 }
 
 .stat-value {
@@ -700,53 +709,6 @@ audio {
     font-size: var(--font-size-xs);
 }
 
-/* Feedback du temps */
-.time-feedback {
-    margin-top: var(--spacing);
-    padding: var(--spacing);
-    background-color: var(--primary-lighter);
-    border-radius: var(--radius);
-    border-left: 4px solid var(--time-color);
-    font-size: var(--font-size-sm);
-}
-
-.time-feedback i {
-    color: var(--time-color);
-    margin-right: var(--spacing-sm);
-}
-
-/* Partage */
-.social-share {
-    margin-top: var(--spacing);
-    text-align: center;
-}
-
-.social-share-title {
-    font-size: var(--font-size);
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-light);
-}
-
-.copyable-text-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-    max-width: 90%;
-}
-
-.copyable-text {
-    width: 100%;
-    padding: var(--spacing-sm);
-    border: 1px solid #ddd;
-    border-radius: var(--radius);
-    background-color: var(--bg);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-sm);
-    min-height: 60px;
-    resize: none;
-}
-
 /* CTAs */
 .cta-container {
     margin: var(--spacing-md) 0;
@@ -754,12 +716,18 @@ audio {
     background-color: var(--bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    text-align: center; /* Centrer titre "Continuez..." */
+}
+.cta-container h3 {
+    color: var(--text); /* Couleur standard */
+    font-size: var(--font-size-md);
 }
 
 .cta-buttons {
     display: flex;
     flex-direction: column;
     gap: var(--spacing);
+    margin-top: var(--spacing); /* Espace après titre */
 }
 
 .cta-button {
@@ -769,59 +737,231 @@ audio {
     border-radius: var(--radius);
     text-decoration: none;
     color: var(--text-white);
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast);
     box-shadow: var(--shadow-sm);
+    text-align: left; /* Aligner texte interne à gauche */
 }
-
 .cta-button:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(1.02); /* Effet de survol amélioré */
     box-shadow: var(--shadow);
 }
 
-.cta-button.primary {
-    background-color: var(--primary);
-}
-
-.cta-button.secondary {
-    background-color: #3c8c40; /* Vert foncé */
-}
-
-.cta-button.tertiary {
-    background-color: var(--primary-light);
-}
+.cta-button.primary { background-color: var(--primary); }
+.cta-button.secondary { background-color: #3c8c40; } /* Vert */
+.cta-button.tertiary { background-color: var(--primary-light); }
 
 .cta-icon {
     font-size: 24px;
     margin-right: var(--spacing);
+    width: 30px; /* Largeur fixe pour alignement */
+    text-align: center;
 }
 
-.cta-content {
-    flex: 1;
-}
-
+.cta-content { flex: 1; }
 .cta-title {
     display: block;
     font-weight: bold;
     font-size: var(--font-size);
     margin-bottom: var(--spacing-xs);
 }
-
 .cta-desc {
     display: block;
     font-size: var(--font-size-xs);
     opacity: 0.9;
+    line-height: 1.4; /* Meilleure lisibilité */
 }
-
 .cta-arrow {
     font-size: 20px;
-    margin-left: var(--spacing-sm);
+    margin-left: var(--spacing); /* Légèrement plus d'espace */
+    transition: transform var(--transition-fast);
 }
+.cta-button:hover .cta-arrow {
+    transform: translateX(4px);
+}
+
+/* Résumé des réponses */
+.summary-container {
+    margin: var(--spacing-md) auto;
+    max-width: 100%; /* Prend toute la largeur dispo */
+    text-align: left;
+}
+.summary-container h2 {
+     text-align: center; /* Centrer titre section */
+     font-size: var(--font-size-md);
+}
+
+#answers-summary {
+    margin-top: var(--spacing);
+    border-top: 1px solid var(--primary-lighter); /* Ligne séparation */
+}
+
+.summary-item {
+    display: flex; /* Revenir à flex pour alignement */
+    flex-wrap: wrap; /* Permettre retour à la ligne si besoin */
+    justify-content: space-between;
+    padding: var(--spacing) 0; /* Plus d'espace vertical */
+    border-bottom: 1px solid var(--primary-lighter);
+    align-items: center;
+    gap: var(--spacing-sm); /* Espace entre question/réponse */
+}
+
+.summary-item:last-child { border-bottom: none; }
+
+.summary-question {
+    flex-basis: 100%; /* Question prend toute la largeur initialement */
+    margin-bottom: var(--spacing-sm); /* Espace avant la réponse */
+    color: var(--text);
+    font-weight: 500; /* Question un peu plus en évidence */
+}
+.summary-answer {
+    min-width: 150px; /* Un peu plus large */
+    text-align: right;
+    font-weight: normal; /* Police normale pour la réponse */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-grow: 1; /* Permet de prendre l'espace restant */
+    font-size: var(--font-size-sm);
+}
+.summary-answer i {
+    margin-left: var(--spacing); /* Plus d'espace avant icône */
+    font-size: 1.2em;
+}
+.summary-correct-answer {
+    flex-basis: 100%; /* Prend toute la largeur sous la réponse */
+    font-size: var(--font-size-sm);
+    color: var(--correct); /* Couleur verte */
+    margin-top: var(--spacing-xs);
+    text-align: right; /* Aligner avec la réponse */
+}
+
+/* Couleurs pour icônes résumé (Basé sur vos modifs) */
+.summary-answer .correct-answer { color: var(--correct); }
+.summary-answer .wrong-answer { color: var(--primary); } /* Bleu comme demandé */
+.summary-answer .fa-minus-circle { color: var(--neutral); }
+
+
+/* Certificat */
+.certificate {
+    border: 2px solid var(--primary);
+    padding: var(--spacing-md);
+    text-align: center;
+    margin: var(--spacing-md) auto; /* Centré */
+    max-width: 600px; /* Limiter largeur */
+    background-color: var(--card-bg);
+    position: relative;
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    color: var(--text);
+    /* animation: fadeIn 1s ease; - Animation déjà gérée par JS */
+}
+.certificate.hidden { display: none; } /* Assure qu'il est bien caché */
+
+.certificate:before { /* Bordure interne décorative */
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid var(--primary);
+    opacity: 0.3;
+    pointer-events: none;
+    border-radius: calc(var(--radius) - 10px); /* Suit le radius externe */
+}
+
+.certificate h2 {
+    color: var(--primary);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing);
+}
+
+.certificate-content {
+    margin: var(--spacing-md) 0;
+    line-height: 1.8;
+}
+.certificate-content p { /* Style pour les lignes de texte */
+    margin: var(--spacing-sm) 0;
+    color: var(--text-light);
+}
+
+.certificate-name {
+    font-size: var(--font-size-lg); /* Plus grand */
+    font-weight: bold;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    display: inline-block; /* Pour que la bordure s'adapte */
+    padding: 0 var(--spacing) 5px;
+    margin: var(--spacing) 0;
+}
+
+.certificate-score {
+    font-size: var(--font-size-lg); /* Score plus visible */
+    font-weight: bold;
+    color: var(--primary);
+    margin: var(--spacing) 0;
+}
+
+.certificate-date {
+    font-style: italic;
+    margin-top: var(--spacing);
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+}
+
+/* Partage Social */
+.social-share {
+    margin: var(--spacing-md) auto;
+    padding: var(--spacing);
+    background-color: var(--bg);
+    border-radius: var(--radius);
+    max-width: 500px; /* Limiter largeur */
+    text-align: center;
+}
+
+.social-share-title {
+    font-size: var(--font-size);
+    margin-bottom: var(--spacing); /* Plus d'espace */
+    color: var(--text); /* Plus visible */
+    font-weight: 500;
+}
+
+.copyable-text-container {
+    display: flex; /* Aligner textarea et bouton */
+    align-items: flex-start; /* Aligner en haut */
+    gap: var(--spacing-sm);
+    max-width: 100%; /* Utiliser toute la largeur dispo */
+}
+
+.copyable-text {
+    flex-grow: 1; /* Prend l'espace disponible */
+    padding: var(--spacing-sm);
+    border: 1px solid var(--primary-lighter);
+    border-radius: var(--radius-sm); /* Match boutons */
+    background-color: var(--card-bg); /* Fond standard */
+    color: var(--text);
+    font-size: var(--font-size-sm);
+    min-height: 70px; /* Hauteur suffisante */
+    resize: none; /* Pas redimensionnable */
+    line-height: 1.5;
+}
+.copyable-text:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-lighter);
+}
+
+#copy-btn {
+    flex-shrink: 0; /* Empêche le bouton de rétrécir */
+    height: auto; /* S'adapte au padding */
+    align-self: center; /* Centrer verticalement si possible */
+}
+
 
 /* Footer */
 .footer {
     text-align: center;
     padding: var(--spacing) 0;
-    margin-top: auto;
+    margin-top: auto; /* Pousse en bas */
     background-color: var(--card-bg);
     border-radius: var(--radius);
     color: var(--text);
@@ -840,74 +980,93 @@ audio {
     margin-bottom: var(--spacing-sm);
     text-decoration: none;
 }
+.footer-logo:hover {
+    text-decoration: underline;
+}
 
 .footer-text {
     font-size: var(--font-size-xs);
     color: var(--text-light);
 }
 
-/* Buttons layout */
+/* Layout Boutons Précédent/Suivant/Résultats */
 .buttons {
     display: flex;
+    flex-wrap: wrap; /* Permet retour à la ligne */
     justify-content: space-between;
-    margin-top: var(--spacing);
+    margin-top: var(--spacing-md); /* Plus d'espace au-dessus */
+    gap: var(--spacing); /* Espace entre les groupes */
 }
 
 .button-group {
     display: flex;
     gap: var(--spacing-sm);
+    flex-wrap: wrap; /* Permet aux boutons de passer à la ligne */
 }
 
-/* Styles pour les notifications PWA */
+/* --- Styles PWA --- */
+
+/* Notifications (Install, Update, Offline) */
 .install-notification,
-.update-notification {
+.update-notification,
+.offline-notification {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     background-color: var(--card-bg);
     color: var(--text);
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+    box-shadow: var(--shadow);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    max-width: 90%;
-    width: 350px;
+    gap: var(--spacing);
     z-index: 1000;
-    animation: slideUp 0.5s ease;
     border-left: 4px solid var(--primary);
+    max-width: calc(100% - 2 * var(--spacing)); /* Empêche de toucher les bords */
+    width: auto; /* Largeur auto */
+    min-width: 280px; /* Largeur min */
+}
+
+.install-notification,
+.update-notification {
+    bottom: var(--spacing);
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column; /* Contenu vertical */
+    text-align: center;
+    animation: slideUp 0.5s ease forwards;
+}
+.install-notification i:first-child, /* Icône principale */
+.update-notification i:first-child {
+    font-size: 1.5em;
+    color: var(--primary);
+    margin-bottom: var(--spacing-sm);
+}
+.install-notification p,
+.update-notification p {
+    margin-bottom: var(--spacing);
+    font-size: var(--font-size-sm);
 }
 
 .update-notification {
-    top: 20px;
+    top: var(--spacing);
     bottom: auto;
-    animation: slideDown 0.5s ease;
+    animation: slideDown 0.5s ease forwards;
 }
 
 .offline-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--card-bg);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 10px 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-    animation: fadeIn 0.5s ease;
-    border-left: 4px solid var(--primary);
+    top: var(--spacing);
+    right: var(--spacing);
+    animation: fadeIn 0.5s ease forwards;
+}
+.offline-notification i:first-child {
+    color: var(--primary);
 }
 
 .install-buttons,
 .update-buttons {
     display: flex;
-    gap: 10px;
-    margin: 10px 0;
+    gap: var(--spacing);
+    margin-top: var(--spacing-sm);
 }
 
 .close-notification {
@@ -915,12 +1074,24 @@ audio {
     border: none;
     cursor: pointer;
     color: var(--text-light);
-    margin-left: 10px;
-    min-height: 44px;
-    min-width: 44px;
+    padding: var(--spacing-xs);
+    position: absolute; /* Positionner pour ne pas gêner le layout */
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    line-height: 1; /* Empêcher hauteur excessive */
+}
+.close-notification:hover {
+    color: var(--incorrect);
+}
+.install-notification .close-notification, /* Ajuster position pour layout vertical */
+.update-notification .close-notification {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
 }
 
-/* Thème sombre */
+
+/* --- Thème Sombre --- */
+
 @media (prefers-color-scheme: dark) {
     :root {
         --bg: #121212;
@@ -932,84 +1103,93 @@ audio {
         --primary-light: #5f7cb0;
         --primary-lighter: #2a3a5a;
         --neutral: #555;
+        --correct: #66bb6a; /* Vert un peu plus clair */
+        --correct-light: rgba(102, 187, 106, 0.15);
+        /* --incorrect et --incorrect-light non utilisés visuellement mais gardés */
     }
     
     /* Ajustements spécifiques pour le mode sombre */
-    h1, h2, h3, h4 {
-        color: var(--primary);
-    }
+    h1, h2, h3, h4 { color: var(--primary); }
+    .subtitle { color: var(--text-light); }
+    .detail-item { color: var(--text); }
+    .detail-item i { color: var(--correct); }
+    .timer-option label { color: var(--text-light); }
+    .timer-option input[type="checkbox"] { accent-color: var(--primary); }
 
-    .option {
-        background-color: var(--primary-lighter);
-        color: var(--text);
-    }
-    
-    .option:hover {
-        background-color: var(--primary-light);
-        color: var(--text-white);
-    }
-    
-    .btn-secondary {
-        background-color: #444;
-        color: var(--text);
-    }
-    
-    .btn-secondary:hover {
-        background-color: #555;
-    }
+    .question-container { background-color: var(--card-bg); border-left-color: var(--primary); } /* Fond plus sombre */
+    .question-text { color: var(--text); }
+    audio { filter: invert(90%) hue-rotate(180deg); } /* Inverser couleurs lecteur audio */
 
-    .btn:disabled {
-        background-color: var(--neutral);
-        color: rgba(224, 224, 224, 0.5);
-    }
-    
-    .timer {
-        background-color: var(--primary-lighter);
-        color: var(--text);
-    }
+    .option { background-color: var(--primary-lighter); color: var(--text); }
+    .option:hover { background-color: var(--primary-light); color: var(--text-white); }
+    .option.selected { background-color: var(--primary); color: var(--text-white); border-color: var(--primary); }
+    .option.correct { background-color: var(--correct); color: var(--text-white); border-color: var(--correct); }
+    .option.incorrect { background-color: var(--primary); color: var(--text-white); border-color: var(--primary); }
 
-    .timer i {
-        color: var(--primary);
-    }
-    
-    .progress-bar {
-        background-color: #333;
-    }
-    
-    .step {
-        background-color: var(--neutral);
-        color: var(--text);
-    }
-    
-    .summary-item {
-        border-bottom-color: #333;
-    }
-    
-    .footer {
-        background-color: var(--card-bg);
-        color: var(--text);
-    }
-    
-    .certificate {
-        background-color: var(--card-bg);
-        color: var(--text);
-        border-color: var(--primary);
-    }
-    
-    .certificate:before {
-        border-color: var(--primary);
-    }
+    .feedback-correct { background-color: var(--correct-light); border-left-color: var(--correct); color: var(--text); }
+    .feedback-incorrect { background-color: var(--correct-light); border-left-color: var(--primary); color: var(--text); }
+    .feedback-correct h3 { color: var(--correct); }
+    .feedback-incorrect h3 { color: var(--primary); }
+     .feedback-container strong { color: var(--correct); } /* Bonne réponse reste verte */
 
-    .certificate-name, .certificate-score {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-    }
+    .btn { background-color: var(--primary); color: var(--text-white); }
+    .btn:hover { background-color: var(--primary-hover); }
+    .btn:disabled { background-color: var(--neutral); color: rgba(224, 224, 224, 0.5); }
+    .btn-secondary { background-color: #444; color: var(--text); }
+    .btn-secondary:hover { background-color: #555; }
+    .btn-success { background-color: var(--correct); color: var(--text-white); }
+    .btn-success:hover { background-color: #55a05a; } /* Vert sombre ajusté */
 
-    .score-highlight {
-        color: var(--primary);
-        text-shadow: none;
-    }
-    
+    .progress-bar { background-color: #333; }
+    .progress { background-color: var(--primary); }
+    .step { background-color: var(--neutral); color: var(--text); }
+    .step.active { background-color: var(--primary); color: var(--text-white); }
+    .step.completed { background-color: var(--correct); color: var(--text-white); }
+    .step.error { background-color: #6c757d; color: var(--text-white); } /* Gris conservé */
+
+    .timer { background-color: var(--primary-lighter); color: var(--text); }
+    .timer i { color: var(--primary); }
+    .timer-toggle { color: var(--text-light); }
+    .timer-toggle:hover { color: var(--primary); }
+
+    .score-highlight { color: var(--primary); text-shadow: none; }
+    #score-message { color: var(--text-light); }
+
+    .stats-container { background-color: var(--card-bg); }
+    .stat-item { background-color: var(--bg); border-left-color: var(--primary-light); }
+    .stat-value { color: var(--primary); }
+    .stat-label { color: var(--text-light); }
+
+    .cta-container { background-color: var(--card-bg); }
+     .cta-container h3 { color: var(--text); }
+    .cta-button { color: var(--text-white); /* S'assurer que texte reste blanc */}
+    .cta-button.primary { background-color: var(--primary); }
+    .cta-button.secondary { background-color: #55a05a; } /* Vert sombre ajusté */
+    .cta-button.tertiary { background-color: var(--primary-light); }
+
+    .summary-container h2 { color: var(--primary); }
+    #answers-summary { border-top-color: #333; }
+    .summary-item { border-bottom-color: #333; }
+    .summary-question { color: var(--text); }
+     .summary-correct-answer { color: var(--correct); }
+
+    .certificate { background-color: var(--card-bg); color: var(--text); border-color: var(--primary); }
+    .certificate:before { border-color: var(--primary); }
+    .certificate h2 { color: var(--primary); }
+    .certificate-content p { color: var(--text-light); }
+    .certificate-name, .certificate-score { color: var(--primary); border-bottom-color: var(--primary); }
+    .certificate-date { color: var(--text-light); }
+
+    .social-share { background-color: var(--card-bg); }
+    .social-share-title { color: var(--text); }
+    .copyable-text-container { /* Pas de changement nécessaire */ }
+    .copyable-text { border-color: #444; background-color: var(--bg); color: var(--text); }
+     .copyable-text:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-lighter);}
+
+    .footer { background-color: var(--card-bg); color: var(--text); }
+    .footer-logo { color: var(--primary); }
+    .footer-text { color: var(--text-light); }
+
     .install-notification,
     .update-notification,
     .offline-notification {
@@ -1017,55 +1197,41 @@ audio {
         color: var(--text);
         border-left-color: var(--primary);
     }
-
-    .close-notification {
-        color: var(--text-light);
+    .install-notification i:first-child,
+    .update-notification i:first-child,
+     .offline-notification i:first-child {
+        color: var(--primary);
     }
+    .close-notification { color: var(--text-light); }
+    .close-notification:hover { color: #f44336; } /* Rouge pour fermer en sombre */
 }
 
-/* Responsive */
+
+/* --- Responsive --- */
+
 @media (max-width: 768px) {
     :root {
         --spacing-md: 20px;
         --spacing: 14px;
+        --font-size-xl: 1.8rem; /* Ajuster titres */
+        --font-size-xxl: 2.2rem; /* Ajuster score */
     }
+    body { padding: var(--spacing); }
+    .quiz-container { padding: var(--spacing); }
+    h1 { font-size: var(--font-size-xl); } /* H1 responsive */
+    .option { padding: var(--spacing); } /* Padding options */
+
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); } /* Stats plus petites */
+    .stat-value { font-size: var(--font-size); }
     
-    body {
-        padding: var(--spacing);
-    }
-    
-    .quiz-container {
-        padding: var(--spacing);
-    }
-    
-    h1 {
-        font-size: var(--font-size-lg);
-    }
-    
-    .option {
-        padding: var(--spacing-sm);
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .cta-button {
-        padding: var(--spacing);
-    }
-    
-    .cta-icon {
-        font-size: 20px;
-        margin-right: var(--spacing-sm);
-    }
-    
-    .cta-title {
-        font-size: var(--font-size-sm);
-    }
-    
-    .cta-desc {
-        font-size: var(--font-size-xs);
-    }
+    .cta-button { padding: var(--spacing); flex-direction: column; text-align: center; }
+    .cta-icon { margin-right: 0; margin-bottom: var(--spacing-sm); }
+    .cta-arrow { display: none; } /* Cacher flèche */
+    .cta-title { font-size: var(--font-size-sm); }
+    .cta-desc { font-size: var(--font-size-xs); }
+
+     .copyable-text-container { flex-direction: column; }
+     #copy-btn { width: 100%; margin-top: var(--spacing-sm); }
 }
 
 @media (max-width: 576px) {
@@ -1076,95 +1242,138 @@ audio {
         --font-size-lg: 1.25rem;
         --font-size-xxl: 1.8rem;
     }
+    body { padding: var(--spacing-sm); }
+    .quiz-container { padding: var(--spacing); margin-bottom: var(--spacing); }
+    h1 { font-size: var(--font-size-lg); margin-bottom: var(--spacing); }
+    h2 { font-size: var(--font-size); }
+
+    /* Layout boutons full width sur mobile */
+    .buttons { flex-direction: column; gap: var(--spacing-sm); }
+    .button-group { width: 100%; justify-content: center; flex-direction: column; }
+    .button-group .btn { width: 100%; margin: 0 0 var(--spacing-xs) 0; } /* Boutons pleine largeur */
     
-    body {
-        padding: var(--spacing-sm);
+    #start-btn { width: 100%; min-width: unset; }
+
+    .summary-item { align-items: flex-start; }
+    .summary-question { flex-basis: auto; width: 100%; } /* Question pleine largeur */
+    .summary-answer { justify-content: flex-start; text-align: left; min-width: unset; width: 100%;} /* Réponse en dessous */
+     .summary-correct-answer { text-align: left; width: 100%; }
+
+    .progress-steps { gap: 4px; }
+    .step { width: 25px; height: 25px; font-size: calc(var(--font-size-xs) * 0.9); }
+    
+    .certificate { padding: var(--spacing); }
+    .certificate-name { font-size: var(--font-size-md); }
+    .certificate-score { font-size: var(--font-size); }
+
+     .stats-grid { grid-template-columns: 1fr; } /* 1 colonne */
+
+     .cta-container, .stats-container, .social-share { padding: var(--spacing-sm); }
+}
+
+/* --- Safari iOS fixes --- */
+@supports (-webkit-touch-callout: none) {
+    body { min-height: -webkit-fill-available; }
+    input, textarea, select, button { -webkit-appearance: none; border-radius: var(--radius-sm); }
+}
+
+/* --- Styles d'Impression --- */
+@media print {
+    @page { 
+        size: A4; 
+        margin: 20mm; 
     }
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: white !important;
+        color: black !important;
+        max-width: 100%;
+        -webkit-print-color-adjust: exact !important; /* For Chrome/Safari */
+        print-color-adjust: exact !important; /* Standard */
+    }
+    /* Masquer tout sauf le conteneur du quiz */
+    body > *:not(.quiz-container),
+    .footer { display: none !important; }
     
     .quiz-container {
-        padding: var(--spacing);
-        margin-bottom: var(--spacing);
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        background-color: white !important;
     }
-    
-    h1 {
-        font-size: var(--font-size-lg);
-        margin-bottom: var(--spacing);
-    }
-    
-    h2 {
-        font-size: var(--font-size);
-    }
-    
-    .buttons {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-    }
-    
-    .button-group {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    /* Ajuster pour que les boutons ne prennent pas toute la largeur */
-    .button-group .btn {
-       flex-grow: 1;
-       min-width: 120px;
-       width: auto;
-    }
+     /* Masquer tout dans le conteneur sauf l'écran de résultat */
+     .quiz-container > *:not(#result) { display: none !important; }
+     
+     #result {
+         display: block !important; /* Assurer visibilité */
+         padding: 0 !important; /* Pas de padding pour laisser la marge @page gérer */
+         text-align: center !important;
+     }
+     /* Masquer les éléments non désirés dans les résultats */
+     #result > *:not(.certificate):not(h1):not(.score-highlight):not(#score-message):not(#summary-container) {
+         display: none !important;
+     }
+      .buttons, .social-share, .stats-container, .cta-container {
+         display: none !important;
+     }
 
-    #start-btn {
-        width: 80%;
-    }
+     /* Styles spécifiques pour certificat */
+     .certificate {
+         display: block !important; /* Assurer visibilité si caché par JS */
+         border: 2px solid black !important;
+         box-shadow: none !important;
+         margin: 40px auto !important; /* Marge pour impression */
+         max-width: 90% !important; /* Utiliser la largeur de la page */
+         background-color: white !important;
+         color: black !important;
+         page-break-inside: avoid; /* Essayer d'éviter coupure */
+     }
+      .certificate:before { display: none !important; } /* Cacher bordure décorative */
+     .certificate h2,
+     .certificate-name,
+     .certificate-score {
+        color: black !important;
+         border-bottom-color: black !important;
+     }
+     .certificate p,
+     .certificate-date {
+         color: #333 !important;
+     }
 
-    .summary-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .summary-answer {
-        margin-top: var(--spacing-xs);
-    }
+     /* Styles pour le résumé des réponses */
+     #summary-container {
+         margin-top: 30px !important;
+         page-break-before: always; /* Commencer sur une nouvelle page */
+         text-align: left !important;
+     }
+     #summary-container h2 {
+         color: black !important;
+         text-align: center !important;
+         margin-bottom: 20px !important;
+     }
+     .summary-item {
+         border-bottom: 1px solid #ccc !important;
+         page-break-inside: avoid;
+     }
+     .summary-question, .summary-answer, .summary-correct-answer {
+         color: black !important;
+     }
+     .summary-answer i { display: none !important; } /* Cacher icônes */
+      .correct-answer, .summary-correct-answer { color: #333 !important; font-style: italic; } /* Indiquer correction différemment */
+      .wrong-answer { color: #333 !important; }
 
-    /* Assurer que les étapes restent lisibles */
-    .progress-steps {
-        gap: 4px;
-    }
-    .step {
-        width: 25px;
-        height: 25px;
-        font-size: calc(var(--font-size-xs) * 0.9);
-    }
-    
-    .certificate {
-        padding: var(--spacing);
-    }
-    
-    .certificate-name {
-        font-size: var(--font-size-md);
-    }
-    
-    .certificate-score {
-        font-size: var(--font-size);
-    }
+
+     a[href]:after { content: none !important; } /* Ne pas afficher les URLs */
 }
 
-/* Safari iOS fixes */
-@supports (-webkit-touch-callout: none) {
-    body {
-        min-height: -webkit-fill-available;
-    }
-    
-    input, textarea, select, button {
-        -webkit-appearance: none;
-        border-radius: var(--radius-sm);
-    }
-}
-
-/* Animations définies */
+/* --- Animations définies --- */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
