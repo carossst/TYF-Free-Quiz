@@ -1,6 +1,243 @@
-        // Configuration des questions du quiz (votre code existant)
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Your French - Quiz Interactif</title>
+    <meta name="description" content="Testez votre niveau de français avec ce quiz rapide et découvrez votre score !">
+
+    <!-- Meta tags PWA -->
+    <meta name="theme-color" content="#111f46">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Test Your French">
+
+    <!-- Manifeste PWA -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icônes -->
+    <link rel="icon" href="icons/icon-72x72.png" type="image/png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Script pour l'enregistrement du Service Worker (Optionnel, si vous utilisez sw.js) -->
+    <!-- Vous pouvez le laisser ici ou le déplacer à la fin si vous préférez -->
+    <script>
+        // Vérifier si les Service Workers sont supportés
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // Assurez-vous que le chemin vers sw.js est correct
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker enregistré avec succès:', registration.scope);
+                } catch (error) {
+                    console.error('Échec de l\'enregistrement du Service Worker:', error);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Écran d'accueil -->
+        <div id="welcome-screen" class="screen fade-in">
+            <div class="quiz-logo">
+                <img src="icons/icon-192x192.png" alt="Test Your French Logo">
+            </div>
+            <h1>Test Your French</h1>
+            <p class="subtitle">Découvrez votre niveau de français en quelques minutes !</p>
+            <div class="test-details">
+                <div class="detail-item"><i class="fas fa-check"></i> Grammaire & Vocabulaire</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Compréhension</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Expressions idiomatiques</div>
+            </div>
+            <div class="mt-6 px-4">
+                <p>Ce quiz contient <span id="question-count">0</span> questions à choix multiples.</p>
+                <p>Défiez-vous et partagez votre score avec vos amis !</p>
+            </div>
+            <div class="timer-option">
+                <label class="flex-center">
+                    <input type="checkbox" id="enable-timer" checked>
+                    <span>Activer le chronomètre pour plus de challenge</span>
+                </label>
+            </div>
+            <button id="start-btn" class="btn" aria-label="Commencer le quiz">
+                <i class="btn-icon fas fa-play"></i>Commencer le Quiz
+            </button>
+        </div>
+
+        <!-- Écran du Quiz -->
+        <div id="quiz-screen" class="hidden">
+            <h1>Quiz de Français</h1>
+
+            <div class="timer-container hidden" id="timer-display">
+                <div class="timer" aria-live="polite">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer-value">00:00</span>
+                </div>
+                <button class="timer-toggle" id="timer-toggle" aria-label="Masquer le chronomètre">
+                    <i class="fas fa-eye-slash"></i>
+                </button>
+            </div>
+
+            <div class="progress-container" aria-label="Progression du quiz">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="progress-steps" id="progress-steps" aria-hidden="true">
+                    <!-- Les étapes seront ajoutées ici dynamiquement -->
+                </div>
+            </div>
+
+            <div id="quiz" role="form" tabindex="-1" aria-label="Zone de la question actuelle">
+                <!-- Les questions seront ajoutées ici dynamiquement -->
+            </div>
+
+            <div id="feedback" class="feedback-container" aria-live="polite">
+                <!-- Le feedback sera ajouté ici dynamiquement -->
+            </div>
+
+            <div class="buttons">
+                <div class="button-group">
+                    <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Question précédente">
+                        <i class="fas fa-arrow-left btn-icon"></i>Précédent
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="next-btn" class="btn" disabled aria-label="Question suivante">
+                        Suivant<i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+                    <button id="submit-btn" class="btn" style="display: none;" aria-label="Terminer le quiz">
+                        Résultats<i class="fas fa-flag-checkered" style="margin-left: 8px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran des Résultats -->
+        <div id="result" class="result-container" style="display: none;" tabindex="-1" aria-label="Zone des résultats">
+            <h1>Résultats du Quiz</h1>
+            <div class="score-highlight" aria-live="polite">
+                <span id="score">0</span>/<span id="total-questions">0</span>
+            </div>
+
+            <div id="score-message" aria-live="polite"></div>
+
+            <div class="stats-container fade-in">
+                <h2>Votre Performance</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracy">0%</div>
+                        <div class="stat-label">Précision</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avg-time">0s</div>
+                        <div class="stat-label">Temps moyen / question</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="fastest-answer">0s</div>
+                        <div class="stat-label">Réponse la plus rapide</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="slowest-answer">0s</div>
+                        <div class="stat-label">Réponse la plus longue</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-container fade-in">
+                <h3 class="text-center mb-4">Continuez votre progression en français</h3>
+                <div class="cta-buttons">
+                    <a href="https://testyourfrench.com/french-tests-bundle/" target="_blank" rel="noopener" class="cta-button primary">
+                        <span class="cta-icon">🔍</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Quiz Complet de Français</span>
+                            <span class="cta-desc">Testez vraiment votre niveau avec notre pack complet de tests</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                    <a href="https://testyourfrench.com/travel-to-france-essentials-bundle/" target="_blank" rel="noopener" class="cta-button secondary">
+                        <span class="cta-icon">🗼</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Guide Essentiel de Paris</span>
+                            <span class="cta-desc">Tout ce qu'il faut savoir pour votre voyage à Paris</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                    <a href="https://onlinenewsletter.kit.com/products/10-things-french-b1-exam" target="_blank" rel="noopener" class="cta-button tertiary">
+                        <span class="cta-icon">🎓</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Préparez votre B1</span>
+                            <span class="cta-desc">Les 10 clés pour réussir l'examen B1 de français</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="summary-container" class="summary-container fade-in">
+                <h2>Détail des réponses</h2>
+                <div id="answers-summary">
+                    <!-- Le résumé des réponses sera ajouté ici dynamiquement -->
+                </div>
+            </div>
+
+            <div id="certificate" class="certificate hidden fade-in">
+                <h2>Certificat de Réussite</h2>
+                <div class="certificate-content">
+                    <p>Ce certificat atteste que</p>
+                    <div class="certificate-name" id="participant-name">Participant</div>
+                    <p>a complété le quiz de français avec un score de</p>
+                    <div class="certificate-score"><span id="certificate-score">0</span>/<span id="certificate-total">0</span></div>
+                    <p class="certificate-date">Date: <span id="certificate-date"></span></p>
+                </div>
+            </div>
+
+            <div class="social-share fade-in">
+                <p class="social-share-title">Partagez votre score :</p>
+                <div class="copyable-text-container">
+                    <textarea id="share-text" class="copyable-text" readonly aria-label="Texte à partager">Just took this French quiz and got [SCORE]/[TOTAL]! 🇫🇷 Think you can beat my score? Try it here 👉 www.testyourfrench.com #FrenchChallenge #TestYourSkills</textarea>
+                    <button id="copy-btn" class="btn btn-sm" aria-label="Copier le texte de partage">
+                        <i class="fas fa-copy"></i> Copier
+                    </button>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <div class="button-group">
+                    <button id="restart-btn" class="btn btn-success" aria-label="Recommencer le quiz">
+                        <i class="fas fa-redo btn-icon"></i>Recommencer
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="export-btn" class="btn" aria-label="Exporter les résultats">
+                        <i class="fas fa-download btn-icon"></i>Exporter
+                    </button>
+                    <button id="print-btn" class="btn" aria-label="Imprimer le certificat">
+                        <i class="fas fa-print btn-icon"></i>Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="https://www.testyourfrench.com" class="footer-logo" target="_blank" rel="noopener">Test Your French</a>
+            <p class="footer-text">Made by Test Your French - Améliorez votre français dès aujourd'hui !</p>
+        </div>
+    </footer>
+
+    <!-- =========== DEBUT DU SCRIPT PRINCIPAL DU QUIZ =========== -->
+    <script>
+        // Configuration des questions du quiz
         const quizQuestions = [
-            // ... (vos questions ici) ...
              {
                 question: "How do you say \"My name is\"? (informal)",
                 options: ["Je m'appelle", "Je viens vous", "J'ai le nommé", "J'ai une montre"],
@@ -36,14 +273,14 @@
                 options: ["Tu viens chez moi ?", "Tu vas loin ?", "Tu viens d'où ?", "Tu tiens ton chien ?"],
                 correctAnswer: "Tu viens d'où ?",
                 explanation: "<strong>\"Tu viens d'où ?\"</strong> <em>(Where are you from?)</em>",
-                audio: "audio/TYF_Lead_6.mp3"
+                audio: "audio/TYF_Lead_6.mp3" // Assurez-vous que ce chemin est correct
             },
             {
                 question: "Listen to this. What is she saying?",
                 options: ["Tu es étudiant ?", "Tu pars où ?", "Tu étudies à l'université ?", "Tu as étudié où ?"],
                 correctAnswer: "Tu as étudié où ?",
                 explanation: "<strong>\"Tu as étudié où ?\"</strong> <em>(Where did you study?)</em>",
-                audio: "audio/TYF_Lead_7.mp3"
+                audio: "audio/TYF_Lead_7.mp3" // Assurez-vous que ce chemin est correct
             },
             {
                 question: "Bonjour, c'est la première fois que je viens. Je ________ ? (fill the blank)",
@@ -65,18 +302,18 @@
             }
         ];
 
-        // État du quiz (votre code existant)
+        // État du quiz
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswers = [];
-        let questionStatus = []; // État de chaque question: null, 'correct', 'incorrect'
-        let questionTimes = []; // Temps pour chaque question
-        let startTime = null; // Temps de départ pour la question actuelle
-        let timerEnabled = true; // Timer activé par défaut
-        let timerInterval = null; // Intervalle du timer
-        let totalTimeElapsed = 0; // Temps total écoulé pour le quiz
+        let questionStatus = [];
+        let questionTimes = [];
+        let startTime = null;
+        let timerEnabled = true;
+        let timerInterval = null;
+        let totalTimeElapsed = 0;
 
-        // Éléments DOM - Regroupés par fonctionnalité (votre code existant)
+        // Éléments DOM
         const DOM = {
              screens: {
                 welcome: document.getElementById('welcome-screen'),
@@ -135,16 +372,15 @@
             DOM.questionCount.textContent = quizQuestions.length;
             initializeArrays();
             setupEventListeners();
-            // Cacher l'écran des résultats initialement
             DOM.screens.result.style.display = 'none';
             DOM.screens.quiz.classList.add('hidden');
+            DOM.screens.welcome.classList.remove('hidden');
 
             document.querySelectorAll('.fade-in').forEach(el => {
                 el.addEventListener('animationend', () => {
                     el.classList.remove('fade-in');
-                });
+                }, { once: true });
             });
-             DOM.screens.welcome.classList.remove('hidden'); // Assurer que l'accueil est visible
         });
 
         // Initialise les tableaux d'état
@@ -166,6 +402,9 @@
             DOM.quiz.timer.toggle.addEventListener('click', toggleTimer);
             DOM.quiz.timer.checkbox.addEventListener('change', (e) => {
                 timerEnabled = e.target.checked;
+                 if (DOM.screens.quiz.classList.contains('hidden')) {
+                     if (!timerEnabled) DOM.quiz.timer.container.classList.add('hidden');
+                 }
             });
             DOM.buttons.copy.addEventListener('click', copyShareText);
         }
@@ -174,34 +413,31 @@
         function initQuiz() {
             currentQuestion = 0;
             score = 0;
-            totalTimeElapsed = 0; // Réinitialiser le temps total
+            totalTimeElapsed = 0;
             initializeArrays();
 
             if (timerEnabled) {
                 DOM.quiz.timer.container.classList.remove('hidden', 'timer-hidden');
-                DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye-slash"></i>'; // Reset toggle icon
+                DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
                 startTimer();
             } else {
                 DOM.quiz.timer.container.classList.add('hidden');
-                stopTimer(); // Assure que tout timer précédent est arrêté
+                stopTimer();
             }
 
             showQuestion();
             createProgressSteps();
             updateProgressBar();
 
-            // Transition des écrans
             DOM.screens.welcome.classList.add('fade-out');
-             setTimeout(() => {
+            setTimeout(() => {
                 DOM.screens.welcome.classList.add('hidden');
-                DOM.screens.welcome.classList.remove('fade-out'); // Clean up class
+                DOM.screens.welcome.classList.remove('fade-out');
                 DOM.screens.quiz.classList.remove('hidden');
                 DOM.screens.quiz.classList.add('fade-in');
-                DOM.screens.result.style.display = 'none'; // Ensure result screen is hidden
-                 // Focus on the quiz container or first question for accessibility
-                 DOM.quiz.container.focus();
-            }, 300); // Match CSS animation duration
-
+                DOM.screens.result.style.display = 'none';
+                DOM.quiz.container.focus();
+            }, 300);
 
             updateButtons();
         }
@@ -209,26 +445,33 @@
         // Fonctions du timer
         function startTimer() {
             if (!timerEnabled) return;
-            startTime = new Date(); // Reset start time for the first question
-            updateTimerDisplay(); // Affiche 00:00
-            clearInterval(timerInterval); // Clear any existing interval
+            startTime = new Date();
+            totalTimeElapsed = 0;
+            questionTimes = Array(quizQuestions.length).fill(0);
+            updateTimerDisplay();
+            clearInterval(timerInterval);
             timerInterval = setInterval(updateTimerDisplay, 1000);
         }
 
         function stopTimer() {
             clearInterval(timerInterval);
-            timerInterval = null; // Clear interval ID
+            timerInterval = null;
         }
 
         function updateTimerDisplay() {
-            if (!timerEnabled || !startTime) return; // Add check for startTime
+            if (!timerEnabled || startTime === null) {
+                if (!DOM.quiz.timer.container.classList.contains('hidden')) {
+                    DOM.quiz.timer.value.textContent = '00:00';
+                }
+                return;
+            }
 
             const now = new Date();
             const currentQuestionTime = Math.floor((now - startTime) / 1000);
-            const totalDisplayTime = totalTimeElapsed + currentQuestionTime; // Temps total affiché
+            const displayTime = totalTimeElapsed + currentQuestionTime;
 
-            const minutes = Math.floor(totalDisplayTime / 60).toString().padStart(2, '0');
-            const seconds = (totalDisplayTime % 60).toString().padStart(2, '0');
+            const minutes = Math.floor(displayTime / 60).toString().padStart(2, '0');
+            const seconds = (displayTime % 60).toString().padStart(2, '0');
             DOM.quiz.timer.value.textContent = `${minutes}:${seconds}`;
         }
 
@@ -236,9 +479,10 @@
             if (!timerEnabled || !startTime) return;
             const endTime = new Date();
             const timeTaken = Math.floor((endTime - startTime) / 1000);
-            questionTimes[currentQuestion] = timeTaken;
-            totalTimeElapsed += timeTaken; // Ajoute le temps de cette question au total
-             startTime = new Date(); // Reset start time for the NEXT question immediately
+            if (questionTimes[currentQuestion] === 0) {
+                questionTimes[currentQuestion] = timeTaken > 0 ? timeTaken : 1;
+                totalTimeElapsed += questionTimes[currentQuestion];
+            }
         }
 
         function toggleTimer() {
@@ -270,9 +514,9 @@
                     step.setAttribute('aria-label', `Question ${i + 1} - Correcte`);
                 } else if (questionStatus[i] === 'incorrect') {
                     step.classList.add('error');
-                     step.setAttribute('aria-label', `Question ${i + 1} - Incorrecte`);
+                    step.setAttribute('aria-label', `Question ${i + 1} - Incorrecte`);
                 } else {
-                     step.setAttribute('aria-label', `Question ${i + 1} - Non répondue`);
+                    step.setAttribute('aria-label', `Question ${i + 1} - Non répondue`);
                 }
                 DOM.quiz.progress.steps.appendChild(step);
             }
@@ -280,17 +524,25 @@
 
         // Affiche la question actuelle
         function showQuestion() {
+             if (timerEnabled && !questionStatus[currentQuestion]) {
+                startTime = new Date();
+                updateTimerDisplay();
+             } else if (!timerEnabled) {
+                 startTime = null;
+                 updateTimerDisplay();
+             }
+
             const question = quizQuestions[currentQuestion];
             let questionHTML = `
                 <fieldset class="question-container fade-in" id="question-${currentQuestion + 1}" aria-labelledby="question-text-${currentQuestion + 1}">
-                    <legend class="sr-only">Question ${currentQuestion + 1}</legend>
+                    <legend class="sr-only">Question ${currentQuestion + 1} sur ${quizQuestions.length}</legend>
                     <p class="question-text" id="question-text-${currentQuestion + 1}">${question.question}</p>
             `;
 
             if (question.audio) {
                 questionHTML += `
                     <div class="audio-container">
-                        <audio controls>
+                        <audio controls preload="metadata">
                             <source src="${question.audio}" type="audio/mpeg">
                             Votre navigateur ne supporte pas l'élément audio.
                         </audio>
@@ -303,29 +555,31 @@
             question.options.forEach((option, index) => {
                 const isSelected = selectedAnswers[currentQuestion] === option;
                 let optionClass = 'option';
-                 let ariaChecked = 'false';
+                let ariaChecked = 'false';
+                let tabIndex = questionStatus[currentQuestion] ? '-1' : '0';
+                let pointerEvents = questionStatus[currentQuestion] ? 'none' : 'auto';
 
-                 if (isSelected) {
+                if (isSelected) {
                     optionClass += ' selected';
                     ariaChecked = 'true';
-                     if (questionStatus[currentQuestion] === 'correct') {
+                    if (questionStatus[currentQuestion] === 'correct') {
                         optionClass += ' correct';
                     } else if (questionStatus[currentQuestion] === 'incorrect') {
                         optionClass += ' incorrect';
                     }
+                } else if (questionStatus[currentQuestion] === 'incorrect' && option === question.correctAnswer) {
+                    optionClass += ' correct';
+                    tabIndex = '-1';
+                    pointerEvents = 'none';
                 }
-                 // Highlight correct answer if already answered incorrectly
-                 else if (questionStatus[currentQuestion] === 'incorrect' && option === question.correctAnswer) {
-                     optionClass += ' correct'; // Show correct answer after incorrect selection
-                 }
-
 
                 questionHTML += `
                     <div class="${optionClass}"
                          data-index="${index}"
                          role="radio"
                          aria-checked="${ariaChecked}"
-                         tabindex="${questionStatus[currentQuestion] ? '-1' : '0'}"> <!-- Disable focus if answered -->
+                         tabindex="${tabIndex}"
+                         style="pointer-events: ${pointerEvents};">
                         ${option}
                     </div>
                 `;
@@ -334,60 +588,62 @@
             questionHTML += `</div></fieldset>`;
             DOM.quiz.container.innerHTML = questionHTML;
 
-            // Clear and potentially show feedback
             DOM.quiz.feedback.classList.remove('visible');
             DOM.quiz.feedback.innerHTML = '';
-             if (questionStatus[currentQuestion]) { // If already answered
-                 updateFeedback(); // Show feedback immediately
-                 disableOptions(); // Ensure options are disabled
-             } else {
-                 attachOptionEventListeners(); // Only attach listeners if not answered
-             }
+            if (questionStatus[currentQuestion]) {
+                updateFeedback();
+            }
+
+            if (!questionStatus[currentQuestion]) {
+                attachOptionEventListeners();
+            }
 
             updateButtons();
             updateProgressBar();
             createProgressSteps();
 
-             // Reset start time only if the question hasn't been answered yet
-            if (!questionStatus[currentQuestion]) {
-                startTime = new Date();
-            }
-
-             // Focus logic
             setTimeout(() => {
-                 const focusTarget = document.querySelector('.option[tabindex="0"]'); // Focus first available option
-                 if (focusTarget) {
-                    focusTarget.focus();
-                } else {
-                    // If no options are focusable (already answered), focus the container or next button
-                    DOM.buttons.next.focus();
-                 }
-             }, 100); // Small delay for fade-in
+                 const focusTarget = DOM.quiz.container.querySelector('.option[tabindex="0"]') || DOM.buttons.next || DOM.buttons.submit;
+                 if(focusTarget) focusTarget.focus();
+             }, 100);
         }
 
 
         // Attache les écouteurs d'événements aux options
         function attachOptionEventListeners() {
-            const options = document.querySelectorAll('.option');
+            const options = DOM.quiz.container.querySelectorAll('.option');
             options.forEach(option => {
-                if(option.getAttribute('tabindex') === '0') { // Only attach if focusable
-                    option.addEventListener('click', selectOption);
-                    option.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            selectOption({ target: option });
-                        }
-                    });
+                if(option.getAttribute('tabindex') === '0') {
+                    option.addEventListener('click', handleOptionSelection);
+                    option.addEventListener('keydown', handleOptionKeydown);
                 }
             });
         }
 
-        // Gère la sélection d'une option
-        function selectOption(event) {
-            const selectedOptionElement = event.target.closest('.option'); // Ensure we get the .option div
-            if (!selectedOptionElement || questionStatus[currentQuestion]) return; // Already answered or not an option
+        function removeOptionEventListeners() {
+            const options = DOM.quiz.container.querySelectorAll('.option');
+            options.forEach(option => {
+                option.removeEventListener('click', handleOptionSelection);
+                option.removeEventListener('keydown', handleOptionKeydown);
+            });
+        }
 
-            recordQuestionTime(); // Record time when an answer is selected
+        function handleOptionSelection(event) {
+            selectOption(event.target);
+        }
+        function handleOptionKeydown(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectOption(event.target);
+            }
+        }
+
+        // Gère la sélection d'une option
+        function selectOption(selectedOptionElement) {
+            if (!selectedOptionElement || !selectedOptionElement.classList.contains('option') || questionStatus[currentQuestion]) return;
+
+            recordQuestionTime();
+            removeOptionEventListeners();
 
             const selectedIndex = parseInt(selectedOptionElement.dataset.index);
             const selectedAnswerText = quizQuestions[currentQuestion].options[selectedIndex];
@@ -395,62 +651,49 @@
 
             selectedAnswers[currentQuestion] = selectedAnswerText;
 
-            // Determine correctness
             if (selectedAnswerText === correctAnswerText) {
                 questionStatus[currentQuestion] = 'correct';
-                score++; // Increment score only when first answered correctly
+                score++;
             } else {
                 questionStatus[currentQuestion] = 'incorrect';
             }
 
-             // Update visual state of options
-            const allOptions = document.querySelectorAll('.option');
+            const allOptions = DOM.quiz.container.querySelectorAll('.option');
             allOptions.forEach(opt => {
                 opt.classList.remove('selected');
-                 opt.setAttribute('aria-checked', 'false');
-                opt.setAttribute('tabindex', '-1'); // Make non-interactive after selection
+                opt.setAttribute('aria-checked', 'false');
+                opt.setAttribute('tabindex', '-1');
+                opt.style.pointerEvents = 'none';
             });
 
             selectedOptionElement.classList.add('selected');
             selectedOptionElement.setAttribute('aria-checked', 'true');
 
-             if (questionStatus[currentQuestion] === 'correct') {
+            if (questionStatus[currentQuestion] === 'correct') {
                 selectedOptionElement.classList.add('correct');
             } else {
                 selectedOptionElement.classList.add('incorrect');
-                 // Also highlight the correct one if wrong answer selected
-                 allOptions.forEach(opt => {
-                     if (opt.textContent === correctAnswerText) {
-                         opt.classList.add('correct');
-                     }
-                 });
+                allOptions.forEach(opt => {
+                    if (opt.textContent.trim() === correctAnswerText.trim()) {
+                        opt.classList.add('correct');
+                        opt.classList.remove('selected', 'incorrect');
+                    }
+                });
             }
-
 
             updateFeedback();
             updateButtons();
-            createProgressSteps(); // Update step colors
-            disableOptions(); // Make sure options are disabled after selection
+            createProgressSteps();
+            updateProgressBar(); // Mettre à jour la barre après réponse
 
-             // Auto-focus next button for smoother flow
-             DOM.buttons.next.focus();
+            DOM.buttons.next.focus();
         }
-
-         // Disable options after an answer is selected
-        function disableOptions() {
-            const options = document.querySelectorAll('.option');
-            options.forEach(option => {
-                 option.style.pointerEvents = 'none'; // Prevent further clicks
-                 option.setAttribute('tabindex', '-1'); // Remove from tab order
-            });
-        }
-
 
         // Met à jour le feedback après une réponse
         function updateFeedback() {
             const question = quizQuestions[currentQuestion];
             const status = questionStatus[currentQuestion];
-            if (!status) return; // No feedback if not answered
+            if (!status) return;
 
             let feedbackHTML = '';
             if (status === 'correct') {
@@ -463,7 +706,7 @@
             } else {
                 feedbackHTML = `
                     <div class="feedback-incorrect">
-                        <h3><i class="fas fa-times-circle"></i> Incorrect</h3>
+                        <h3><i class="fas fa-info-circle"></i> Information</h3>
                         <p>La bonne réponse était : <strong>${question.correctAnswer}</strong></p>
                         <p>${question.explanation || ''}</p>
                     </div>
@@ -476,21 +719,23 @@
         // Met à jour l'état des boutons de navigation
         function updateButtons() {
             DOM.buttons.prev.disabled = currentQuestion === 0;
-            DOM.buttons.next.disabled = selectedAnswers[currentQuestion] === null;
+            const isAnswered = selectedAnswers[currentQuestion] !== null;
+            DOM.buttons.next.disabled = !isAnswered;
 
             if (currentQuestion === quizQuestions.length - 1) {
                 DOM.buttons.next.style.display = 'none';
-                DOM.buttons.submit.style.display = 'inline-block';
-                DOM.buttons.submit.disabled = selectedAnswers[currentQuestion] === null;
+                DOM.buttons.submit.style.display = 'inline-flex';
+                DOM.buttons.submit.disabled = !isAnswered;
             } else {
-                DOM.buttons.next.style.display = 'inline-block';
+                DOM.buttons.next.style.display = 'inline-flex';
                 DOM.buttons.submit.style.display = 'none';
             }
         }
 
         // Met à jour la barre de progression
         function updateProgressBar() {
-            const progressPercentage = ((currentQuestion + 1) / quizQuestions.length) * 100;
+            const answeredCount = selectedAnswers.filter(a => a !== null).length;
+            const progressPercentage = (answeredCount / quizQuestions.length) * 100;
             DOM.quiz.progress.bar.style.width = `${progressPercentage}%`;
         }
 
@@ -499,43 +744,40 @@
             if (currentQuestion < quizQuestions.length - 1) {
                 currentQuestion++;
                 showQuestion();
+            } else if (currentQuestion === quizQuestions.length - 1 && selectedAnswers[currentQuestion] !== null) {
+                showResults();
             }
-             // Safety check: if somehow called on last question, trigger results
-             else if (currentQuestion === quizQuestions.length - 1) {
-                 showResults();
-             }
         }
 
         // Revient à la question précédente
         function goToPreviousQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                 // No need to record time going back, just display
-                 startTime = null; // Prevent timer update while viewing previous
-                showQuestion();
+             if (currentQuestion > 0) {
+                 startTime = null;
+                 currentQuestion--;
+                 showQuestion();
             }
         }
 
         // Affiche l'écran des résultats
         function showResults() {
             stopTimer();
+             if (timerEnabled && startTime && questionTimes[currentQuestion] === 0) {
+                 recordQuestionTime();
+             }
 
-            // Calculate final stats
             const accuracy = Math.round((score / quizQuestions.length) * 100);
-            const validTimes = questionTimes.filter(t => t > 0); // Filter out unanswered/navigated back
-            const avgTime = validTimes.length ? (validTimes.reduce((a, b) => a + b, 0) / validTimes.length).toFixed(1) : 0;
-            const fastest = validTimes.length ? Math.min(...validTimes) : 0;
-            const slowest = validTimes.length ? Math.max(...validTimes) : 0;
+            const validTimes = questionTimes.filter(t => t > 0);
+            const avgTime = validTimes.length ? (validTimes.reduce((a, b) => a + b, 0) / validTimes.length).toFixed(1) : 'N/A';
+            const fastest = validTimes.length ? Math.min(...validTimes) : 'N/A';
+            const slowest = validTimes.length ? Math.max(...validTimes) : 'N/A';
 
-            // Display score and stats
             DOM.results.score.textContent = score;
             DOM.results.totalQuestions.textContent = quizQuestions.length;
             DOM.results.stats.accuracy.textContent = `${accuracy}%`;
-            DOM.results.stats.avgTime.textContent = `${avgTime}s`;
-            DOM.results.stats.fastestAnswer.textContent = `${fastest}s`;
-            DOM.results.stats.slowestAnswer.textContent = `${slowest}s`;
+            DOM.results.stats.avgTime.textContent = avgTime !== 'N/A' ? `${avgTime}s` : avgTime;
+            DOM.results.stats.fastestAnswer.textContent = fastest !== 'N/A' ? `${fastest}s` : fastest;
+            DOM.results.stats.slowestAnswer.textContent = slowest !== 'N/A' ? `${slowest}s` : slowest;
 
-            // Score message
             let message = '';
             if (accuracy === 100) message = "🎉 Excellent ! Score parfait !";
             else if (accuracy >= 80) message = "👍 Très bien ! Vous maîtrisez bien le sujet.";
@@ -543,35 +785,27 @@
             else message = "💪 Ne baissez pas les bras ! Chaque erreur est une leçon.";
             DOM.results.message.innerHTML = `<p>${message}</p>`;
 
-            // Display summary
             displaySummary();
 
-             // Update and display certificate
             DOM.results.certificate.score.textContent = score;
             DOM.results.certificate.total.textContent = quizQuestions.length;
-            DOM.results.certificate.date.textContent = new Date().toLocaleDateString('fr-FR');
-             if (score >= Math.ceil(quizQuestions.length * 0.6)) { // Show certificate if score is >= 60%
-                 DOM.results.certificate.container.classList.remove('hidden');
-             } else {
-                 DOM.results.certificate.container.classList.add('hidden');
-             }
+            DOM.results.certificate.date.textContent = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+            if (score >= Math.ceil(quizQuestions.length * 0.6)) {
+                DOM.results.certificate.container.classList.remove('hidden');
+            } else {
+                DOM.results.certificate.container.classList.add('hidden');
+            }
 
+             const shareTextTemplate = `J'ai obtenu ${score}/${quizQuestions.length} (${accuracy}%) au Quiz Test Your French ! 🇫🇷 Essayez-le : ${window.location.href} #FrenchQuiz #TestYourFrench`;
+             DOM.results.shareText.value = shareTextTemplate;
 
-            // Update share text
-             const shareTextTemplate = DOM.results.shareText.value;
-             DOM.results.shareText.value = shareTextTemplate
-                 .replace('[SCORE]', score)
-                 .replace('[TOTAL]', quizQuestions.length);
-
-
-            // Transition screens
-             DOM.screens.quiz.classList.add('fade-out');
-             setTimeout(() => {
+            DOM.screens.quiz.classList.add('fade-out');
+            setTimeout(() => {
                 DOM.screens.quiz.classList.add('hidden');
                 DOM.screens.quiz.classList.remove('fade-out');
-                DOM.screens.result.style.display = 'block'; // Change display from none
+                DOM.screens.result.style.display = 'block';
                 DOM.screens.result.classList.add('fade-in');
-                 DOM.screens.result.focus(); // Focus results container
+                DOM.screens.result.focus();
             }, 300);
         }
 
@@ -582,16 +816,17 @@
                 const userAnswer = selectedAnswers[index];
                 const status = questionStatus[index];
                 const isCorrect = status === 'correct';
-                const icon = isCorrect ? 'fa-check-circle correct-answer' : (status === 'incorrect' ? 'fa-times-circle wrong-answer' : 'fa-minus-circle');
+                const iconClass = isCorrect ? 'fas fa-check-circle correct-answer' : (status === 'incorrect' ? 'fas fa-times-circle wrong-answer' : 'fas fa-minus-circle');
+                const answerClass = isCorrect ? 'correct-answer' : (status === 'incorrect' ? 'wrong-answer' : '');
 
                 summaryHTML += `
                     <div class="summary-item">
                         <div class="summary-question">
                            ${index + 1}. ${q.question}
                         </div>
-                        <div class="summary-answer ${isCorrect ? 'correct-answer' : 'wrong-answer'}">
-                            ${userAnswer !== null ? `Votre réponse: ${userAnswer}` : 'Non répondu'}
-                            <i class="fas ${icon}" aria-hidden="true"></i>
+                        <div class="summary-answer ${answerClass}">
+                            ${userAnswer !== null ? `<span>${userAnswer}</span>` : 'Non répondu'}
+                            <i class="${iconClass}" aria-hidden="true"></i>
                         </div>
                         ${!isCorrect && userAnswer !== null ? `<div class="summary-correct-answer">Bonne réponse: ${q.correctAnswer}</div>` : ''}
                     </div>
@@ -602,145 +837,95 @@
 
         // Recommence le quiz
         function restartQuiz() {
-             DOM.screens.result.classList.add('fade-out');
-             setTimeout(() => {
-                DOM.screens.result.style.display = 'none'; // Hide results
+            DOM.screens.result.classList.add('fade-out');
+            setTimeout(() => {
+                DOM.screens.result.style.display = 'none';
                 DOM.screens.result.classList.remove('fade-out');
-                 initQuiz(); // Restart the quiz process
-                // Optionally, go back to welcome screen:
-                // DOM.screens.welcome.classList.remove('hidden');
-                // DOM.screens.welcome.classList.add('fade-in');
+                DOM.screens.welcome.classList.remove('hidden');
+                DOM.screens.welcome.classList.add('fade-in');
+                // Reset checkbox state
+                DOM.quiz.timer.checkbox.checked = true;
+                timerEnabled = true;
             }, 300);
         }
 
         // Copie le texte de partage
-        function copyShareText() {
-            DOM.results.shareText.select();
-            DOM.results.shareText.setSelectionRange(0, 99999); // For mobile devices
+        async function copyShareText() {
             try {
-                navigator.clipboard.writeText(DOM.results.shareText.value).then(() => {
-                    // Success feedback
-                    const originalText = DOM.buttons.copy.innerHTML;
+                await navigator.clipboard.writeText(DOM.results.shareText.value);
+                const originalText = DOM.buttons.copy.innerHTML;
+                DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                DOM.buttons.copy.disabled = true;
+                setTimeout(() => {
+                    DOM.buttons.copy.innerHTML = originalText;
+                    DOM.buttons.copy.disabled = false;
+                }, 2000);
+            } catch (err) {
+                console.error('Erreur de copie:', err);
+                 DOM.results.shareText.select();
+                 DOM.results.shareText.setSelectionRange(0, 99999);
+                 try {
+                    document.execCommand('copy');
+                     const originalText = DOM.buttons.copy.innerHTML;
                     DOM.buttons.copy.innerHTML = '<i class="fas fa-check"></i> Copié !';
                     DOM.buttons.copy.disabled = true;
                     setTimeout(() => {
                         DOM.buttons.copy.innerHTML = originalText;
                         DOM.buttons.copy.disabled = false;
-                    }, 1500);
-                }, (err) => {
-                    // Error feedback (fallback for older browsers)
-                    console.error('Erreur de copie:', err);
-                    alert("Erreur lors de la copie. Veuillez copier manuellement.");
-                });
-            } catch (err) {
-                console.error('Erreur de copie (catch):', err);
-                 alert("Erreur lors de la copie. Veuillez copier manuellement.");
+                    }, 2000);
+                 } catch (execErr) {
+                    alert("Impossible de copier automatiquement. Veuillez copier manuellement le texte.");
+                 }
             }
         }
 
+
         // Exporte les résultats (simplifié en texte)
         function exportResults() {
-            let exportText = `Résultats du Quiz Français\n`;
-            exportText += `Score: ${score}/${quizQuestions.length}\n`;
-            exportText += `Précision: ${DOM.results.stats.accuracy.textContent}\n`;
-            exportText += `Temps moyen: ${DOM.results.stats.avgTime.textContent}\n\n`;
-            exportText += `Détail des réponses:\n`;
+            let exportText = `Résultats du Quiz Français - ${new Date().toLocaleString('fr-FR')}\n\n`;
+            exportText += `Score Final: ${score}/${quizQuestions.length} (${Math.round((score / quizQuestions.length) * 100)}%)\n`;
+             if(timerEnabled) {
+                const validTimes = questionTimes.filter(t => t > 0);
+                const avgTime = validTimes.length ? (validTimes.reduce((a, b) => a + b, 0) / validTimes.length).toFixed(1) : 'N/A';
+                exportText += `Temps moyen par question: ${avgTime !== 'N/A' ? avgTime + 's' : avgTime}\n`;
+                exportText += `Temps total: ${totalTimeElapsed}s\n`;
+             }
+            exportText += `\n--- Détail des réponses ---\n`;
 
             quizQuestions.forEach((q, index) => {
                 exportText += `\nQ${index + 1}: ${q.question}\n`;
                 exportText += `   Votre réponse: ${selectedAnswers[index] || 'Non répondu'}\n`;
-                if (questionStatus[index] !== 'correct') {
+                if (questionStatus[index] === 'incorrect') {
                     exportText += `   Bonne réponse: ${q.correctAnswer}\n`;
                 }
-                exportText += `   Statut: ${questionStatus[index] || 'Non répondu'}\n`;
-                 if(timerEnabled && questionTimes[index] > 0) {
-                    exportText += `   Temps: ${questionTimes[index]}s\n`;
-                 }
+                exportText += `   Statut: ${questionStatus[index] === 'correct' ? 'Correct' : (questionStatus[index] === 'incorrect' ? 'Incorrect' : 'Non répondu')}\n`;
+                if (timerEnabled && questionTimes[index] > 0) {
+                    exportText += `   Temps pris: ${questionTimes[index]}s\n`;
+                }
             });
 
             const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'resultats_quiz_francais.txt';
+            link.download = `resultats_quiz_francais_${new Date().toISOString().slice(0,10)}.txt`;
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(link.href); // Clean up
+            URL.revokeObjectURL(link.href);
         }
 
         // Imprime les résultats/certificat
         function printResults() {
-            // Temporairement cacher les éléments non désirés pour l'impression
-            const elementsToHide = document.querySelectorAll('body > *:not(.quiz-container), .quiz-container > *:not(#result), #result > *:not(.certificate, h1, .score-highlight, #score-message), .buttons, .social-share, .stats-container, .cta-container, #summary-container, footer');
-            elementsToHide.forEach(el => el.classList.add('print-hidden'));
-
-             // Add a print-specific class to body for potential CSS overrides
-            document.body.classList.add('printing-certificate');
-
-
-            // Assurer que le certificat est visible pour l'impression si masqué
-            const certWasHidden = DOM.results.certificate.container.classList.contains('hidden');
-            if (certWasHidden) {
-                DOM.results.certificate.container.classList.remove('hidden');
-            }
-
-            window.print(); // Déclenche l'impression
-
-            // Restaurer l'affichage après impression (timeout pour laisser le temps au dialogue d'impression)
-             setTimeout(() => {
-                elementsToHide.forEach(el => el.classList.remove('print-hidden'));
-                 if (certWasHidden) {
-                    DOM.results.certificate.container.classList.add('hidden');
-                 }
-                document.body.classList.remove('printing-certificate');
-             }, 500);
+            window.print();
         }
 
     </script>
-     <!-- CSS pour masquer les éléments lors de l'impression -->
-    <style>
-        @media print {
-            body.printing-certificate {
-                margin: 0;
-                padding: 0;
-                background-color: white; /* Force background for print */
-            }
-            .print-hidden {
-                display: none !important;
-            }
-             /* Styles spécifiques pour l'impression du certificat */
-            body.printing-certificate .quiz-container {
-                 box-shadow: none;
-                 border: none;
-                 padding: 0;
-                 margin: 0;
-                 width: 100%;
-                 max-width: 100%;
-            }
-             body.printing-certificate #result {
-                 padding: 20px; /* Add some padding for print */
-            }
-             body.printing-certificate .certificate {
-                 border: 2px solid black; /* Ensure border prints */
-                 box-shadow: none;
-                 margin-top: 0;
-            }
-             body.printing-certificate .certificate h2,
-            body.printing-certificate .certificate-name,
-            body.printing-certificate .certificate-score {
-                color: black !important; /* Force black color for print */
-                 border-bottom-color: black !important;
-            }
-             body.printing-certificate .certificate p,
-             body.printing-certificate .certificate-date {
-                 color: #333 !important;
-             }
-        }
-        /* Styles pour le timer masqué */
-        .timer-hidden #timer-value {
-            display: none;
-        }
-    </style>
+    <!-- =========== FIN DU SCRIPT PRINCIPAL DU QUIZ =========== -->
+
+    <!-- Script pour les notifications PWA (Optionnel) -->
+    <!-- Le code JS pour gérer beforeinstallprompt et les messages SW est inclus ci-dessus -->
+    <!-- Vous pouvez ajouter ici le code pour afficher les notifications si nécessaire -->
+
 </body>
 </html>
