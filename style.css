@@ -1,7 +1,6 @@
 /* 
  * style.css - Feuille de style optimisée pour le quiz de français
  * Avec support pour mode sombre, accessibilité et PWA
- * Version Corrigée pour Contraste
  */
  
 /* Variables pour une cohérence et facilité de maintenance */
@@ -25,6 +24,7 @@
     --radius: 12px;
     --shadow: 0 8px 20px rgba(0,0,0,0.1);
     --shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+    --transition-fast: all 0.2s ease;
     --transition: all 0.3s ease;
     --spacing-xs: 4px;
     --spacing-sm: 8px;
@@ -60,7 +60,7 @@ body {
     flex-direction: column;
 }
 
-/* Accessibilité: focus visible - Amélioration pour tous les éléments interactifs */
+/* Accessibilité: focus visible */
 a:focus, 
 button:focus, 
 input:focus, 
@@ -133,6 +133,17 @@ textarea:focus,
     overflow: hidden;
 }
 
+/* Logo du quiz */
+.quiz-logo {
+    text-align: center;
+    margin-bottom: var(--spacing);
+}
+
+.quiz-logo img {
+    max-width: 150px;
+    height: auto;
+}
+
 /* Écrans */
 .screen {
     text-align: center;
@@ -162,6 +173,15 @@ h2 {
     text-align: center;
     margin-bottom: var(--spacing-md);
     font-size: var(--font-size);
+}
+
+/* Centrer le bouton commencer */
+#start-btn {
+    display: block;
+    margin: 0 auto;
+    margin-top: var(--spacing);
+    margin-bottom: var(--spacing);
+    min-width: 200px;
 }
 
 /* Question et options */
@@ -273,14 +293,15 @@ audio {
     font-size: 1.5em;
 }
 
+/* Utiliser même couleur principale pour option incorrecte */
 .option.incorrect {
-    background-color: var(--incorrect);
+    background-color: var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
     color: var(--text-white);
-    border-color: var(--incorrect);
+    border-color: var(--primary);
 }
 
 .option.incorrect:after {
-    content: "✗";
+    content: "✓"; /* Utiliser le même symbole que correct */
     position: absolute;
     right: var(--spacing);
     top: 50%;
@@ -314,8 +335,8 @@ audio {
 }
 
 .feedback-incorrect {
-    background-color: var(--incorrect-light);
-    border-left: 4px solid var(--incorrect);
+    background-color: var(--correct-light); /* Utiliser le même fond que correct */
+    border-left: 4px solid var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
     padding: var(--spacing);
     color: var(--text); /* Assure lisibilité en mode clair/sombre */
 }
@@ -336,7 +357,7 @@ audio {
 }
 
 .feedback-incorrect h3 {
-    color: var(--incorrect);
+    color: var(--primary); /* Utiliser la couleur primaire au lieu de rouge */
 }
 
 /* Boutons */
@@ -478,12 +499,13 @@ audio {
     color: var(--text-white);
 }
 
+/* Modification: utiliser gris au lieu de rouge pour questions incorrectes */
 .step.error {
-    background-color: var(--incorrect);
+    background-color: #6c757d; /* Gris neutre au lieu de rouge */
     color: var(--text-white);
 }
 
-/* Timer (Pas visible dans les captures fournies, mais inclus pour complétude) */
+/* Timer */
 .timer-container {
     position: relative;
     margin-bottom: var(--spacing);
@@ -527,14 +549,12 @@ audio {
     padding: var(--spacing-md);
     text-align: center;
     margin-top: var(--spacing-md);
-    background-color: var(--card-bg); /* Fond standard de carte (blanc en clair, sombre en dark) */
+    background-color: var(--card-bg);
     position: relative;
     box-shadow: var(--shadow);
     border-radius: var(--radius);
     animation: fadeIn 1s ease;
-    color: var(--text); /* Couleur de texte par défaut pour le contenu */
-    /* Note: Si le fond apparaît sombre en mode clair, vérifier JS ou conflits CSS. */
-    /* Les couleurs de texte ici sont conçues pour le fond var(--card-bg). */
+    color: var(--text);
 }
 
 .certificate:before {
@@ -573,26 +593,26 @@ audio {
 .certificate-score {
     font-size: var(--font-size-md);
     font-weight: bold;
-    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
+    color: var(--primary);
     margin: var(--spacing) 0;
 }
 
 .certificate-level {
     font-weight: bold;
-    color: var(--text); /* Utilise la couleur de texte standard */
+    color: var(--text);
 }
 
 .certificate-date {
     font-style: italic;
     margin-top: var(--spacing);
-    color: var(--text-light); /* Couleur de texte légère */
+    color: var(--text-light);
 }
 
 /* Résumé des résultats */
 .score-highlight {
     font-size: var(--font-size-xxl);
     font-weight: bold;
-    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
+    color: var(--primary);
     margin: var(--spacing) 0;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
 }
@@ -606,7 +626,7 @@ audio {
     display: flex;
     justify-content: space-between;
     padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid var(--primary-lighter); /* Ligne de séparation légère */
+    border-bottom: 1px solid var(--primary-lighter);
     align-items: center;
 }
 
@@ -618,7 +638,7 @@ audio {
     flex: 1;
     text-align: left;
     padding-right: var(--spacing);
-    color: var(--text); /* Couleur texte standard */
+    color: var(--text);
 }
 
 .summary-answer {
@@ -639,8 +659,162 @@ audio {
     color: var(--correct);
 }
 
+/* Utiliser couleur principale au lieu de rouge */
 .wrong-answer {
-    color: var(--incorrect);
+    color: var(--primary);
+}
+
+/* Statistiques */
+.stats-container {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+    margin: var(--spacing-md) 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing);
+    margin-top: var(--spacing);
+}
+
+.stat-item {
+    text-align: center;
+    padding: var(--spacing);
+    background-color: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-label {
+    color: var(--text-light);
+    font-size: var(--font-size-xs);
+}
+
+/* Feedback du temps */
+.time-feedback {
+    margin-top: var(--spacing);
+    padding: var(--spacing);
+    background-color: var(--primary-lighter);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--time-color);
+    font-size: var(--font-size-sm);
+}
+
+.time-feedback i {
+    color: var(--time-color);
+    margin-right: var(--spacing-sm);
+}
+
+/* Partage */
+.social-share {
+    margin-top: var(--spacing);
+    text-align: center;
+}
+
+.social-share-title {
+    font-size: var(--font-size);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-light);
+}
+
+.copyable-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 90%;
+}
+
+.copyable-text {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid #ddd;
+    border-radius: var(--radius);
+    background-color: var(--bg);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+    min-height: 60px;
+    resize: none;
+}
+
+/* CTAs */
+.cta-container {
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing);
+    background-color: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+}
+
+.cta-button {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text-white);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.cta-button.primary {
+    background-color: var(--primary);
+}
+
+.cta-button.secondary {
+    background-color: #3c8c40; /* Vert foncé */
+}
+
+.cta-button.tertiary {
+    background-color: var(--primary-light);
+}
+
+.cta-icon {
+    font-size: 24px;
+    margin-right: var(--spacing);
+}
+
+.cta-content {
+    flex: 1;
+}
+
+.cta-title {
+    display: block;
+    font-weight: bold;
+    font-size: var(--font-size);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cta-desc {
+    display: block;
+    font-size: var(--font-size-xs);
+    opacity: 0.9;
+}
+
+.cta-arrow {
+    font-size: 20px;
+    margin-left: var(--spacing-sm);
 }
 
 /* Footer */
@@ -648,11 +822,9 @@ audio {
     text-align: center;
     padding: var(--spacing) 0;
     margin-top: auto;
-    background-color: var(--card-bg); /* Fond standard de carte */
+    background-color: var(--card-bg);
     border-radius: var(--radius);
-    color: var(--text); /* Couleur de texte par défaut */
-    /* Note: Si le fond apparaît sombre en mode clair, vérifier JS ou conflits CSS. */
-    /* Les couleurs de texte ici sont conçues pour le fond var(--card-bg). */
+    color: var(--text);
 }
 
 .footer-content {
@@ -664,14 +836,14 @@ audio {
 .footer-logo {
     font-weight: bold;
     font-size: var(--font-size);
-    color: var(--primary); /* Utilise la couleur primaire (adaptée clair/sombre) */
+    color: var(--primary);
     margin-bottom: var(--spacing-sm);
     text-decoration: none;
 }
 
 .footer-text {
     font-size: var(--font-size-xs);
-    color: var(--text-light); /* Couleur de texte légère */
+    color: var(--text-light);
 }
 
 /* Buttons layout */
@@ -693,8 +865,8 @@ audio {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: var(--card-bg); /* Fond de carte */
-    color: var(--text); /* Texte standard */
+    background-color: var(--card-bg);
+    color: var(--text);
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -718,8 +890,8 @@ audio {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: var(--card-bg); /* Fond de carte */
-    color: var(--text); /* Texte standard */
+    background-color: var(--card-bg);
+    color: var(--text);
     border-radius: 8px;
     padding: 10px 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -742,7 +914,7 @@ audio {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-light); /* Couleur légère pour le bouton fermer */
+    color: var(--text-light);
     margin-left: 10px;
     min-height: 44px;
     min-width: 44px;
@@ -753,33 +925,33 @@ audio {
     :root {
         --bg: #121212;
         --card-bg: #1e1e1e;
-        --text: #e0e0e0; /* Légèrement moins blanc que f0f0f0 pour confort */
-        --text-light: #a0a0a0; /* Gris plus clair pour contraste */
-        --primary: #8ba2d0; /* Correction: Utiliser une couleur primaire claire */
-        --primary-hover: #a8c0e8; /* Correction: Hover clair associé */
-        --primary-light: #5f7cb0; /* Correction: Version light ajustée */
-        --primary-lighter: #2a3a5a; /* Correction: Fond plus sombre pour options, etc. */
-        --neutral: #555; /* Gris plus foncé pour désactivé */
+        --text: #e0e0e0;
+        --text-light: #a0a0a0;
+        --primary: #8ba2d0;
+        --primary-hover: #a8c0e8;
+        --primary-light: #5f7cb0;
+        --primary-lighter: #2a3a5a;
+        --neutral: #555;
     }
     
     /* Ajustements spécifiques pour le mode sombre */
     h1, h2, h3, h4 {
-        color: var(--primary); /* Utilise la couleur primaire claire définie ci-dessus */
+        color: var(--primary);
     }
 
     .option {
-        background-color: var(--primary-lighter); /* Fond plus sombre que card-bg */
-        color: var(--text); /* Texte clair */
+        background-color: var(--primary-lighter);
+        color: var(--text);
     }
     
     .option:hover {
-        background-color: var(--primary-light); /* Hover plus clair */
-        color: var(--text-white); /* Assurer texte blanc */
+        background-color: var(--primary-light);
+        color: var(--text-white);
     }
     
     .btn-secondary {
         background-color: #444;
-        color: var(--text); /* Texte clair sur fond sombre */
+        color: var(--text);
     }
     
     .btn-secondary:hover {
@@ -788,66 +960,66 @@ audio {
 
     .btn:disabled {
         background-color: var(--neutral);
-        color: rgba(224, 224, 224, 0.5); /* Texte --text avec opacité réduite */
+        color: rgba(224, 224, 224, 0.5);
     }
     
     .timer {
-        background-color: var(--primary-lighter); /* Fond sombre cohérent */
-        color: var(--text); /* Texte clair */
+        background-color: var(--primary-lighter);
+        color: var(--text);
     }
 
     .timer i {
-        color: var(--primary); /* Icône avec couleur primaire claire */
+        color: var(--primary);
     }
     
     .progress-bar {
-        background-color: #333; /* Fond de la barre sombre */
+        background-color: #333;
     }
     
     .step {
-        background-color: var(--neutral); /* Fond neutre sombre */
-        color: var(--text); /* Texte clair */
+        background-color: var(--neutral);
+        color: var(--text);
     }
     
     .summary-item {
-        border-bottom-color: #333; /* Ligne de séparation sombre */
+        border-bottom-color: #333;
     }
     
     .footer {
-        background-color: var(--card-bg); /* Fond de carte sombre */
-        color: var(--text); /* Texte clair */
+        background-color: var(--card-bg);
+        color: var(--text);
     }
     
     .certificate {
-        background-color: var(--card-bg); /* Fond de carte sombre */
-        color: var(--text); /* Texte clair */
-        border-color: var(--primary); /* Bordure avec couleur primaire claire */
+        background-color: var(--card-bg);
+        color: var(--text);
+        border-color: var(--primary);
     }
     
     .certificate:before {
-        border-color: var(--primary); /* Bordure interne aussi */
+        border-color: var(--primary);
     }
 
     .certificate-name, .certificate-score {
-        color: var(--primary); /* Utilise couleur primaire claire */
+        color: var(--primary);
         border-bottom-color: var(--primary);
     }
 
     .score-highlight {
-        color: var(--primary); /* Utilise couleur primaire claire */
-        text-shadow: none; /* Ombre moins utile en mode sombre */
+        color: var(--primary);
+        text-shadow: none;
     }
     
     .install-notification,
     .update-notification,
     .offline-notification {
-        background-color: var(--card-bg); /* Fond sombre */
-        color: var(--text); /* Texte clair */
-        border-left-color: var(--primary); /* Bordure primaire claire */
+        background-color: var(--card-bg);
+        color: var(--text);
+        border-left-color: var(--primary);
     }
 
     .close-notification {
-        color: var(--text-light); /* Texte léger clair */
+        color: var(--text-light);
     }
 }
 
@@ -873,6 +1045,27 @@ audio {
     .option {
         padding: var(--spacing-sm);
     }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-button {
+        padding: var(--spacing);
+    }
+    
+    .cta-icon {
+        font-size: 20px;
+        margin-right: var(--spacing-sm);
+    }
+    
+    .cta-title {
+        font-size: var(--font-size-sm);
+    }
+    
+    .cta-desc {
+        font-size: var(--font-size-xs);
+    }
 }
 
 @media (max-width: 576px) {
@@ -880,8 +1073,8 @@ audio {
         --spacing: 12px;
         --spacing-md: 16px;
         --font-size-xl: 1.5rem;
-        --font-size-lg: 1.25rem; /* Ajuster taille police pour petits écrans */
-        --font-size-xxl: 1.8rem; /* Ajuster score highlight */
+        --font-size-lg: 1.25rem;
+        --font-size-xxl: 1.8rem;
     }
     
     body {
@@ -910,14 +1103,18 @@ audio {
     .button-group {
         width: 100%;
         justify-content: center;
-        flex-wrap: wrap; /* Permet aux boutons de passer à la ligne si nécessaire */
+        flex-wrap: wrap;
     }
     
     /* Ajuster pour que les boutons ne prennent pas toute la largeur */
     .button-group .btn {
-       flex-grow: 1; /* Permet aux boutons de partager l'espace */
-       min-width: 120px; /* Largeur minimum */
-       width: auto; /* Largeur automatique */
+       flex-grow: 1;
+       min-width: 120px;
+       width: auto;
+    }
+
+    #start-btn {
+        width: 80%;
     }
 
     .summary-item {
@@ -931,12 +1128,24 @@ audio {
 
     /* Assurer que les étapes restent lisibles */
     .progress-steps {
-        gap: 4px; /* Ajouter un petit espace entre les étapes */
+        gap: 4px;
     }
     .step {
         width: 25px;
         height: 25px;
-        font-size: calc(var(--font-size-xs) * 0.9); /* Réduire légèrement la police */
+        font-size: calc(var(--font-size-xs) * 0.9);
+    }
+    
+    .certificate {
+        padding: var(--spacing);
+    }
+    
+    .certificate-name {
+        font-size: var(--font-size-md);
+    }
+    
+    .certificate-score {
+        font-size: var(--font-size);
     }
 }
 
