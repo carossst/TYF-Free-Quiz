@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Your French - Quiz Interactif</title>
-    <meta name="description" content="Testez votre niveau de français avec ce quiz rapide et découvrez votre score !">
     
     <!-- Meta tags PWA -->
     <meta name="theme-color" content="#111f46">
@@ -25,739 +24,595 @@
     
     <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Script pour l'enregistrement du Service Worker -->
-    <script>
-        // Vérifier si les Service Workers sont supportés
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('sw.js');
-                    console.log('Service Worker enregistré avec succès:', registration.scope);
-                } catch (error) {
-                    console.error('Échec de l\'enregistrement du Service Worker:', error);
-                }
-            });
-        }
-    </script>
 </head>
 <body>
-    <header>
-        <h1>Test Your French</h1>
-        <p class="subtitle">Évaluez votre niveau de français</p>
-    </header>
-
-    <main class="quiz-container">
+    <div class="quiz-container">
         <!-- Écran d'accueil -->
-        <div id="welcome-screen" class="screen">
-            <h2>French Quiz - Test Your Basic Knowledge</h2>
-            <p>Ce quiz va tester vos connaissances de base en français.</p>
-            <p>10 questions pour évaluer votre niveau selon le CECRL.</p>
+        <div id="welcome-screen" class="screen fade-in">
+            <!-- Ajout du logo -->
+            <div class="quiz-logo">
+                <img src="icons/icon-192x192.png" alt="Test Your French Logo">
+            </div>
+            <h1>Test Your French</h1>
+            <p class="subtitle">Découvrez votre niveau de français en quelques minutes !</p>
+            <div class="test-details">
+                <div class="detail-item"><i class="fas fa-check"></i> Grammaire & Vocabulaire</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Compréhension</div>
+                <div class="detail-item"><i class="fas fa-check"></i> Expressions idiomatiques</div>
+            </div>
+            <div class="mt-6 px-4">
+                <p>Ce quiz contient <span id="question-count">0</span> questions à choix multiples.</p>
+                <p>Défiez-vous et partagez votre score avec vos amis !</p>
+            </div>
+            <div class="timer-option">
+                <label class="flex-center">
+                    <input type="checkbox" id="enable-timer" checked>
+                    <span>Activer le chronomètre pour plus de challenge</span>
+                </label>
+            </div>
+            <button id="start-btn" class="btn" aria-label="Commencer le quiz">
+                <i class="btn-icon fas fa-play"></i>Commencer le Quiz
+            </button>
+        </div>
+        
+        <!-- Écran du Quiz -->
+        <div id="quiz-screen" class="hidden">
+            <h1>Quiz de Français</h1>
             
-            <div class="buttons">
-                <button id="start-quiz" class="btn">
-                    <i class="fas fa-play btn-icon"></i> Commencer le Quiz
+            <div class="timer-container" id="timer-display">
+                <div class="timer" aria-live="polite">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer-value">00:00</span>
+                </div>
+                <button class="timer-toggle" id="timer-toggle" aria-label="Masquer le chronomètre">
+                    <i class="fas fa-eye-slash"></i>
                 </button>
             </div>
-        </div>
-
-        <!-- Écran du quiz -->
-        <div id="quiz-screen" class="screen hidden">
-            <!-- Barre de progression -->
-            <div class="progress-container">
+            
+            <div class="progress-container" aria-label="Progression du quiz">
                 <div class="progress-bar">
-                    <div class="progress" id="progress-bar"></div>
+                    <div class="progress" id="progress"></div>
                 </div>
-                <div class="progress-steps" id="progress-steps"></div>
-            </div>
-            
-            <!-- Container pour les questions -->
-            <div id="question-container" class="question-container">
-                <p id="question-number" class="sr-only">Question 1 sur 10</p>
-                <p id="question-text" class="question-text"></p>
-                
-                <!-- Container pour l'audio (si nécessaire) -->
-                <div id="audio-container" class="audio-container hidden">
-                    <audio id="question-audio" controls>
-                        <source src="" type="audio/mpeg">
-                        Votre navigateur ne supporte pas l'élément audio.
-                    </audio>
-                </div>
-                
-                <!-- Options de réponse -->
-                <div id="options" class="options"></div>
-                
-                <!-- Feedback après réponse -->
-                <div id="feedback" class="feedback-container">
-                    <div id="feedback-correct" class="feedback-correct hidden">
-                        <h3><i class="fas fa-check-circle"></i> Correct !</h3>
-                        <p id="feedback-correct-text"></p>
-                    </div>
-                    <div id="feedback-incorrect" class="feedback-incorrect hidden">
-                        <h3><i class="fas fa-times-circle"></i> Incorrect</h3>
-                        <p id="feedback-incorrect-text"></p>
-                    </div>
+                <div class="progress-steps" id="progress-steps" aria-hidden="true">
+                    <!-- Les étapes seront ajoutées ici dynamiquement -->
                 </div>
             </div>
             
-            <!-- Boutons de navigation -->
+            <div id="quiz" role="form">
+                <!-- Les questions seront ajoutées ici dynamiquement -->
+            </div>
+            
+            <div id="feedback" class="feedback-container" aria-live="polite">
+                <!-- Le feedback sera ajouté ici dynamiquement -->
+            </div>
+            
             <div class="buttons">
                 <div class="button-group">
-                    <button id="prev-btn" class="btn btn-secondary" disabled>
-                        <i class="fas fa-arrow-left btn-icon"></i> Précédent
+                    <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Question précédente">
+                        <i class="fas fa-arrow-left btn-icon"></i>Précédent
                     </button>
                 </div>
                 <div class="button-group">
-                    <button id="next-btn" class="btn" disabled>
-                        Suivant <i class="fas fa-arrow-right btn-icon"></i>
+                    <button id="next-btn" class="btn" disabled aria-label="Question suivante">
+                        Suivant<i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+                    <button id="submit-btn" class="btn" style="display: none;" aria-label="Terminer le quiz">
+                        Résultats<i class="fas fa-flag-checkered" style="margin-left: 8px;"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        <!-- Écran des résultats -->
-        <div id="results-screen" class="screen hidden">
-            <h2>Résultats du Quiz</h2>
-            <p>Vous avez terminé le quiz !</p>
-            
-            <div class="score-highlight">
-                <span id="score">0</span>/10
+        
+        <!-- Écran des Résultats -->
+        <div id="result" class="result-container">
+            <h1>Résultats du Quiz</h1>
+            <div class="score-highlight" aria-live="polite">
+                <span id="score">0</span>/<span id="total-questions">0</span>
             </div>
             
-            <div id="level-result">
-                <!-- Le niveau sera inséré ici par JavaScript -->
+            <div id="score-message" aria-live="polite"></div>
+            
+            <!-- Stats container -->
+            <div class="stats-container fade-in">
+                <h2>Votre Performance</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracy">0%</div>
+                        <div class="stat-label">Précision</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avg-time">0s</div>
+                        <div class="stat-label">Temps moyen par question</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="fastest-answer">0s</div>
+                        <div class="stat-label">Réponse la plus rapide</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="slowest-answer">0s</div>
+                        <div class="stat-label">Réponse la plus longue</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="certificate">
-                <h2>Certificat de Niveau</h2>
+            <!-- Section CTAs -->
+            <div class="cta-container fade-in">
+                <h3 class="text-center mb-4">Continuez votre progression en français</h3>
+                <div class="cta-buttons">
+                    <a href="https://testyourfrench.com/french-tests-bundle/" target="_blank" class="cta-button primary">
+                        <span class="cta-icon">🔍</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Quiz Complet de Français</span>
+                            <span class="cta-desc">Testez vraiment votre niveau avec notre pack complet de tests</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                    <a href="https://testyourfrench.com/travel-to-france-essentials-bundle/" target="_blank" class="cta-button secondary">
+                        <span class="cta-icon">🗼</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Guide Essentiel de Paris</span>
+                            <span class="cta-desc">Tout ce qu'il faut savoir pour votre voyage à Paris</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                    <a href="https://onlinenewsletter.kit.com/products/10-things-french-b1-exam" target="_blank" class="cta-button tertiary">
+                        <span class="cta-icon">🎓</span>
+                        <div class="cta-content">
+                            <span class="cta-title">Préparez votre B1</span>
+                            <span class="cta-desc">Les 10 clés pour réussir l'examen B1 de français</span>
+                        </div>
+                        <span class="cta-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div id="summary-container" class="summary-container fade-in">
+                <h2>Détail des réponses</h2>
+                <div id="answers-summary">
+                    <!-- Le résumé des réponses sera ajouté ici dynamiquement -->
+                </div>
+            </div>
+            
+            <div id="certificate" class="certificate hidden fade-in">
+                <h2>Certificat de Réussite</h2>
                 <div class="certificate-content">
-                    Ce certificat atteste que
-                    <div class="certificate-name">
-                        <span id="user-name">Participant</span>
-                    </div>
-                    a obtenu le score de
-                    <div class="certificate-score">
-                        <span id="certificate-score">0</span>/10
-                    </div>
-                    et a atteint le niveau
-                    <div class="certificate-level" id="certificate-level">
-                        <!-- Le niveau sera inséré ici par JavaScript -->
-                    </div>
-                    <div class="certificate-date">
-                        <span id="certificate-date"></span>
-                    </div>
+                    <p>Ce certificat atteste que</p>
+                    <div class="certificate-name" id="participant-name">Participant</div>
+                    <p>a complété le quiz de français avec un score de</p>
+                    <div class="certificate-score"><span id="certificate-score">0</span>/<span id="certificate-total">0</span></div>
+                    <p class="certificate-date">Date: <span id="certificate-date"></span></p>
+                </div>
+            </div>
+            
+            <div class="social-share fade-in">
+                <p class="social-share-title">Partagez votre score :</p>
+                <div class="copyable-text-container">
+                    <textarea id="share-text" class="copyable-text" readonly>Just took this French quiz and got [SCORE]/[TOTAL]! 🇫🇷 Think you can beat my score? Try it here 👉 www.testyourfrench.com #FrenchChallenge #TestYourSkills</textarea>
+                    <button id="copy-btn" class="btn btn-sm">
+                        <i class="fas fa-copy"></i> Copier
+                    </button>
                 </div>
             </div>
             
             <div class="buttons">
-                <button id="restart-btn" class="btn">
-                    <i class="fas fa-redo btn-icon"></i> Recommencer
-                </button>
-                <button id="share-btn" class="btn">
-                    <i class="fas fa-share-alt btn-icon"></i> Partager
-                </button>
+                <div class="button-group">
+                    <button id="restart-btn" class="btn btn-success" aria-label="Recommencer le quiz">
+                        <i class="fas fa-redo btn-icon"></i>Recommencer
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="export-btn" class="btn" aria-label="Exporter les résultats">
+                        <i class="fas fa-download btn-icon"></i>Exporter
+                    </button>
+                    <button id="print-btn" class="btn" aria-label="Imprimer le certificat">
+                        <i class="fas fa-print btn-icon"></i>Imprimer
+                    </button>
+                </div>
             </div>
         </div>
-    </main>
-
+    </div>
+    
     <footer class="footer">
         <div class="footer-content">
-            <a href="https://www.testyourfrench.com" class="footer-logo" target="_blank" rel="noopener">
-                Test Your French
-            </a>
-            <p class="footer-text">Improve your French today!</p>
+            <a href="https://www.testyourfrench.com" class="footer-logo" target="_blank">Test Your French</a>
+            <p class="footer-text">Made by Test Your French - Améliorez votre français dès aujourd'hui !</p>
         </div>
     </footer>
 
-    <!-- Script pour les notifications PWA -->
     <script>
-        // Notifications PWA
-        
-        // 1. Notification hors-ligne
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data && event.data.type === 'offline-ready') {
-                    showOfflineNotification();
-                }
-            });
-        }
-        
-        // 2. Invitation à installer
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Afficher la notification d'installation après 10 secondes
-            setTimeout(() => {
-                if (deferredPrompt) {
-                    showInstallNotification();
-                }
-            }, 10000);
-        });
-        
-        // Fonctions pour les notifications
-        function showOfflineNotification() {
-            const notification = document.createElement('div');
-            notification.className = 'offline-notification';
-            notification.innerHTML = `
-                <i class="fas fa-wifi"></i> Ce quiz est maintenant disponible hors-ligne !
-                <button class="close-notification" aria-label="Fermer la notification"><i class="fas fa-times"></i></button>
-            `;
-            document.body.appendChild(notification);
-            
-            // Fermer la notification
-            notification.querySelector('.close-notification').addEventListener('click', () => {
-                notification.classList.add('fade-out');
-                setTimeout(() => notification.remove(), 500);
-            });
-            
-            // Disparaître après 5 secondes
-            setTimeout(() => {
-                notification.classList.add('fade-out');
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }
-        
-        function showInstallNotification() {
-            const notification = document.createElement('div');
-            notification.className = 'install-notification';
-            notification.innerHTML = `
-                <i class="fas fa-download"></i> 
-                <p>Installez ce quiz sur votre appareil pour y accéder plus facilement et l'utiliser hors-ligne !</p>
-                <div class="install-buttons">
-                    <button id="install-now" class="btn btn-sm">Installer</button>
-                    <button id="install-later" class="btn btn-sm btn-secondary">Plus tard</button>
-                </div>
-                <button class="close-notification" aria-label="Fermer la notification"><i class="fas fa-times"></i></button>
-            `;
-            document.body.appendChild(notification);
-            
-            // Gérer les événements des boutons
-            document.getElementById('install-now').addEventListener('click', async () => {
-                notification.remove();
-                
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                }
-            });
-            
-            document.getElementById('install-later').addEventListener('click', () => {
-                notification.remove();
-            });
-            
-            notification.querySelector('.close-notification').addEventListener('click', () => {
-                notification.classList.add('fade-out');
-                setTimeout(() => notification.remove(), 500);
-            });
-        }
-    </script>
-
-    <!-- Script principal du quiz -->
-    <script>
-        // Définition des questions du quiz
-        const questions = [
+        // Configuration des questions du quiz
+        const quizQuestions = [
             {
-                text: "How do you say \"My name is\"? (informal)",
-                options: [
-                    "Je m'appelle",
-                    "Je viens vous",
-                    "J'ai le nommé",
-                    "J'ai une montre"
-                ],
-                correctIndex: 0,
-                explanation: "Literally, <strong>\"I call myself\"</strong>."
+                question: "How do you say \"My name is\"? (informal)",
+                options: ["Je m'appelle", "Je viens vous", "J'ai le nommé", "J'ai une montre"],
+                correctAnswer: "Je m'appelle",
+                explanation: "Literally, \"I call myself\"."
             },
             {
-                text: "How do you say \"I'm from New Orleans\"?",
-                options: [
-                    "J'aime la Nouvelle-Orléans.",
-                    "Je habiter Nouvelle-Orléans.",
-                    "Je viens de la Nouvelle-Orléans.",
-                    "All of the above"
-                ],
-                correctIndex: 2,
-                explanation: "This is the most natural and idiomatic way to say \"I am from New Orleans\" in French. The verb <strong>\"venir de\"</strong> (to come from) is commonly used to express origin or birthplace.<br><br><strong>\"J'aime la Nouvelle-Orléans\"</strong> means \"I love New Orleans.\" This phrase doesn't accurately convey the meaning of \"being from\" a place.<br><br><strong>\"Je habiter à la Nouvelle-Orléans\"</strong> means \"I to inhabit at New Orleans.\" This phrase is not grammatically correct and sounds awkward."
+                question: "How do you say \"I'm from New Orleans\"?",
+                options: ["J'aime la Nouvelle-Orléans.", "Je habiter Nouvelle-Orléans.", "Je viens de la Nouvelle-Orléans.", "All of the above"],
+                correctAnswer: "Je viens de la Nouvelle-Orléans.",
+                explanation: "This is the most natural and idiomatic way to say \"I am from New Orleans\" in French. The verb \"venir de\" (to come from) is commonly used to express origin or birthplace.<br><br>\"J'aime la Nouvelle-Orléans\" means \"I love New Orleans.\" This phrase doesn't accurately convey the meaning of \"being from\" a place.<br><br>\"Je habiter à la Nouvelle-Orléans\" means \"I to inhabit at New Orleans.\" This phrase is not grammatically correct and sounds awkward."
             },
             {
-                text: "How do you say \"You're welcome\"?",
-                options: [
-                    "De rien",
-                    "Avec plaisir",
-                    "Je vous en prie",
-                    "All of the above"
-                ],
-                correctIndex: 3,
-                explanation: "<strong>All the answers are correct.</strong><br><br><strong>\"De rien\"</strong> is the most common and casual way to say you're welcome, and it literally means \"it's nothing\".<br><br><strong>\"Avec plaisir\"</strong> means with pleasure, and it's a friendly and enthusiastic way to say \"you're welcome\".<br><br><strong>\"Je vous en prie\"</strong> is a formal and polite way to say you're welcome, and it literally means \"I beg of you\".<br><br><strong>Cultural insight</strong> for \"je vous en prie\": its roots lie in the Middle Ages, likely emerging around the 13th-14th centuries. Back then, \"prier\" (to pray) wasn't just about requesting or begging, it also carried a strong sense of expressing reverence and devotion."
+                question: "How do you say \"You're welcome\"?",
+                options: ["De rien", "Avec plaisir", "Je vous en prie", "All of the above"],
+                correctAnswer: "All of the above",
+                explanation: "<strong>All the answers are correct.</strong><br><br>\"De rien\" is the most common and casual way to say you're welcome, and it literally means \"it's nothing\".<br><br>\"Avec plaisir\" means with pleasure, and it's a friendly and enthusiastic way to say \"you're welcome\".<br><br>\"Je vous en prie\" is a formal and polite way to say you're welcome, and it literally means \"I beg of you\".<br><br><strong>Cultural insight</strong> for \"je vous en prie\": its roots lie in the Middle Ages, likely emerging around the 13th-14th centuries. Back then, \"prier\" (to pray) wasn't just about requesting or begging, it also carried a strong sense of expressing reverence and devotion."
             },
             {
-                text: "How do you say \"Good evening\"? (as a hello)",
-                options: [
-                    "Bonne nuit",
-                    "Bonsoir",
-                    "Bon après-midi",
-                    "Bonne soirée"
-                ],
-                correctIndex: 1,
-                explanation: "<strong>\"Bonsoir\"</strong> is the correct way to say good evening in French.<br><br><strong>\"Bonne nuit\"</strong> means good night, and it's used when you're going to bed or leaving someone for the night.<br><br><strong>\"Bon après-midi\"</strong> means good afternoon.<br><br><strong>\"Bonne soirée\"</strong> means \"have a good evening\" and specifically conveys the hope that someone has a pleasant evening ahead."
+                question: "How do you say \"Good evening\"? (as a hello)",
+                options: ["Bonne nuit", "Bonsoir", "Bon après-midi", "Bonne soirée"],
+                correctAnswer: "Bonsoir",
+                explanation: "\"Bonsoir\" is the correct way to say good evening in French.<br><br>\"Bonne nuit\" means good night, and it's used when you're going to bed or leaving someone for the night.<br><br>\"Bon après-midi\" means good afternoon.<br><br>\"Bonne soirée\" means \"have a good evening\" and specifically conveys the hope that someone has a pleasant evening ahead."
             },
             {
-                text: "How do you say \"How are you doing\"? (formal)",
-                options: [
-                    "Comment allez-vous ?",
-                    "Ça boom ?",
-                    "C'est beau la vie ?",
-                    "All of the above"
-                ],
-                correctIndex: 0,
-                explanation: "<strong>\"Comment allez-vous ?\"</strong> is the formal and polite way to ask, and it's used with strangers, acquaintances, or superiors.<br><br><strong>\"Ça boom ?\"</strong> is very casual and a bit outdated (not formal).<br><br><strong>\"C'est beau la vie ?\"</strong> is informal and friendly, and it's used with friends."
+                question: "How do you say \"How are you doing\"? (formal)",
+                options: ["Comment allez-vous ?", "Ça boom ?", "C'est beau la vie ?", "All of the above"],
+                correctAnswer: "Comment allez-vous ?",
+                explanation: "\"Comment allez-vous ?\" is the formal and polite way to ask, and it's used with strangers, acquaintances, or superiors.<br><br>\"Ça boom ?\" is very casual and a bit outdated (not formal).<br><br>\"C'est beau la vie ?\" is informal and friendly, and it's used with friends."
             },
             {
-                text: "Listen to this. What is she saying?",
-                options: [
-                    "Tu viens chez moi ?",
-                    "Tu vas loin ?",
-                    "Tu viens d'où ?",
-                    "Tu tiens ton chien ?"
-                ],
-                correctIndex: 2,
+                question: "Listen to this. What is she saying?",
+                options: ["Tu viens chez moi ?", "Tu vas loin ?", "Tu viens d'où ?", "Tu tiens ton chien ?"],
+                correctAnswer: "Tu viens d'où ?",
                 explanation: "<strong>\"Tu viens d'où ?\"</strong> <em>(Where are you from?)</em>",
                 audio: "TYF_Lead_6.mp3"
             },
             {
-                text: "Listen to this. What is she saying?",
-                options: [
-                    "Tu es étudiant ?",
-                    "Tu pars où ?",
-                    "Tu étudies à l'université ?",
-                    "Tu as étudié où ?"
-                ],
-                correctIndex: 3,
+                question: "Listen to this. What is she saying?",
+                options: ["Tu es étudiant ?", "Tu pars où ?", "Tu étudies à l'université ?", "Tu as étudié où ?"],
+                correctAnswer: "Tu as étudié où ?",
                 explanation: "<strong>\"Tu as étudié où ?\"</strong> <em>(Where did you study?)</em>",
                 audio: "TYF_Lead_7.mp3"
             },
             {
-                text: "Bonjour, c'est la première fois que je viens. Je ________ ? (fill the blank)",
-                options: [
-                    "veux vous boire la verre ?",
-                    "vois la musique est bonne ?",
-                    "peux m'asseoir ici",
-                    "vous excuse pas du tout ?"
-                ],
-                correctIndex: 2,
+                question: "Bonjour, c'est la première fois que je viens. Je ________ ? (fill the blank)",
+                options: ["veux vous boire la verre ?", "vois la musique est bonne ?", "peux m'asseoir ici", "vous excuse pas du tout ?"],
+                correctAnswer: "peux m'asseoir ici",
                 explanation: "<strong>\"Bonjour, c'est la première fois que je viens. Je peux m'asseoir ici ?\"</strong><br><em>(Hello, this is my first time here. May I sit here?)</em><br><br>The other options are not grammatically correct."
             },
             {
-                text: "Excusez-moi, je tourne en rond. ___ ? (fill the blank)",
-                options: [
-                    "Pouvez-vous m'indiquer le chemin pour le Louvre s'il vous plait",
-                    "Montrez chemin musée sur carte.",
-                    "Je veux Louvre maintenant.",
-                    "All of the above"
-                ],
-                correctIndex: 0,
-                explanation: "<strong>\"Excusez-moi, je tourne en rond. Pouvez-vous m'indiquer le chemin pour le Louvre s'il vous plait ?\"</strong><br><em>(Excuse me, I'm going round in circles/I'm lost. Could you please show me the way to the Louvre?)</em><br><br>It's the only sentence that is correct grammatically and that is polite and accurate.<br><br><strong>\"Montrez chemin musée carte.\"</strong> This is not a question, but rather a request with a list of words and this does not specify which museum.<br><br><strong>\"Je veux Louvre maintenant.\"</strong> It doesn't explicitly ask someone to provide guidance on how to get there and it sounds rude.<br><br><strong>Tip:</strong> in France, it is always best to say \"s'il vous plait\" in all your interactions."
+                question: "Excusez-moi, je tourne en rond. ___ ? (fill the blank)",
+                options: ["Pouvez-vous m'indiquer le chemin pour le Louvre s'il vous plait", "Montrez chemin musée sur carte.", "Je veux Louvre maintenant.", "All of the above"],
+                correctAnswer: "Pouvez-vous m'indiquer le chemin pour le Louvre s'il vous plait",
+                explanation: "<strong>\"Excusez-moi, je tourne en rond. Pouvez-vous m'indiquer le chemin pour le Louvre s'il vous plait ?\"</strong><br><em>(Excuse me, I'm going round in circles/I'm lost. Could you please show me the way to the Louvre?)</em><br><br>It's the only sentence that is correct grammatically and that is polite and accurate.<br><br>\"Montrez chemin musée carte.\" This is not a question, but rather a request with a list of words and this does not specify which museum.<br><br>\"Je veux Louvre maintenant.\" It doesn't explicitly ask someone to provide guidance on how to get there and it sounds rude.<br><br><strong>Tip:</strong> in France, it is always best to say \"s'il vous plait\" in all your interactions."
             },
             {
-                text: "________ m'inscrire à ce cours. (fill the blank)",
-                options: [
-                    "Je suis en voiture",
-                    "Tu veux le vélo pour",
-                    "Je cherche un lapin",
-                    "Bonjour, j'aimerais"
-                ],
-                correctIndex: 3,
+                question: "________ m'inscrire à ce cours. (fill the blank)",
+                options: ["Je suis en voiture", "Tu veux le vélo pour", "Je cherche un lapin", "Bonjour, j'aimerais"],
+                correctAnswer: "Bonjour, j'aimerais",
                 explanation: "<strong>\"Bonjour, j'aimerais m'inscrire à ce cours.\"</strong><br><em>(Hello, I would like to register for this course.)</em><br><br>In French, we use the conditional of \"vouloir\" (to want) to ask for something politely.<br>Example: I would like a coffee."
             }
         ];
 
-        // Déclaration des variables globales
+        // État du quiz
         let currentQuestion = 0;
         let score = 0;
-        let userAnswers = Array(questions.length).fill(null);
-        let selectedOption = null;
+        let selectedAnswers = [];
+        let questionStatus = []; // État de chaque question: null, 'correct', 'incorrect'
+        let questionTimes = []; // Temps pour chaque question
+        let startTime = null; // Temps de départ
+        let timerEnabled = true; // Timer activé par défaut
+        let timerInterval = null; // Intervalle du timer
+        let totalTime = 0; // Temps total
 
-        // Attendre que le DOM soit complètement chargé
+        // Éléments DOM - Regroupés par fonctionnalité
+        const DOM = {
+            screens: {
+                welcome: document.getElementById('welcome-screen'),
+                quiz: document.getElementById('quiz-screen'),
+                result: document.getElementById('result')
+            },
+            quiz: {
+                container: document.getElementById('quiz'),
+                feedback: document.getElementById('feedback'),
+                progress: {
+                    bar: document.getElementById('progress'),
+                    steps: document.getElementById('progress-steps')
+                },
+                timer: {
+                    container: document.getElementById('timer-display'),
+                    value: document.getElementById('timer-value'),
+                    toggle: document.getElementById('timer-toggle'),
+                    checkbox: document.getElementById('enable-timer')
+                }
+            },
+            results: {
+                score: document.getElementById('score'),
+                totalQuestions: document.getElementById('total-questions'),
+                message: document.getElementById('score-message'),
+                summary: document.getElementById('answers-summary'),
+                stats: {
+                    accuracy: document.getElementById('accuracy'),
+                    avgTime: document.getElementById('avg-time'),
+                    fastestAnswer: document.getElementById('fastest-answer'),
+                    slowestAnswer: document.getElementById('slowest-answer')
+                },
+                certificate: {
+                    container: document.getElementById('certificate'),
+                    score: document.getElementById('certificate-score'),
+                    total: document.getElementById('certificate-total'),
+                    date: document.getElementById('certificate-date'),
+                    name: document.getElementById('participant-name')
+                },
+                shareText: document.getElementById('share-text')
+            },
+            buttons: {
+                start: document.getElementById('start-btn'),
+                prev: document.getElementById('prev-btn'),
+                next: document.getElementById('next-btn'),
+                submit: document.getElementById('submit-btn'),
+                restart: document.getElementById('restart-btn'),
+                export: document.getElementById('export-btn'),
+                print: document.getElementById('print-btn'),
+                copy: document.getElementById('copy-btn')
+            },
+            questionCount: document.getElementById('question-count')
+        };
+
+        // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
-            initQuiz();
+            // Initialiser l'écran d'accueil
+            DOM.questionCount.textContent = quizQuestions.length;
+            
+            // Initialiser les tableaux
+            initializeArrays();
+            
+            // Configurer les écouteurs d'événements
+            setupEventListeners();
+            
+            // Supprimer les classes d'animation après leur exécution pour éviter les problèmes de performance
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.addEventListener('animationend', () => {
+                    el.classList.remove('fade-in');
+                });
+            });
         });
 
-        // Éléments DOM
+        // Initialise les tableaux d'état
+        function initializeArrays() {
+            selectedAnswers = Array(quizQuestions.length).fill(null);
+            questionStatus = Array(quizQuestions.length).fill(null);
+            questionTimes = Array(quizQuestions.length).fill(0);
+        }
+
+        // Configure tous les écouteurs d'événements
+        function setupEventListeners() {
+            // Boutons principaux
+            DOM.buttons.start.addEventListener('click', initQuiz);
+            DOM.buttons.prev.addEventListener('click', goToPreviousQuestion);
+            DOM.buttons.next.addEventListener('click', goToNextQuestion);
+            DOM.buttons.submit.addEventListener('click', showResults);
+            DOM.buttons.restart.addEventListener('click', restartQuiz);
+            DOM.buttons.export.addEventListener('click', exportResults);
+            DOM.buttons.print.addEventListener('click', printResults);
+            
+            // Timer
+            DOM.quiz.timer.toggle.addEventListener('click', toggleTimer);
+            DOM.quiz.timer.checkbox.addEventListener('change', (e) => {
+                timerEnabled = e.target.checked;
+            });
+            
+            // Copier le texte
+            DOM.buttons.copy.addEventListener('click', copyShareText);
+        }
+
+        // Démarre le quiz
         function initQuiz() {
-            console.log("Initialisation du quiz...");
+            // Réinitialiser les variables
+            currentQuestion = 0;
+            score = 0;
+            initializeArrays();
             
-            // Récupération des éléments du DOM
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const quizScreen = document.getElementById('quiz-screen');
-            const resultsScreen = document.getElementById('results-screen');
-            const startBtn = document.getElementById('start-quiz');
-            const nextBtn = document.getElementById('next-btn');
-            const prevBtn = document.getElementById('prev-btn');
-            const restartBtn = document.getElementById('restart-btn');
-            const shareBtn = document.getElementById('share-btn');
-            const questionText = document.getElementById('question-text');
-            const questionNumber = document.getElementById('question-number');
-            const optionsContainer = document.getElementById('options');
-            const progressBar = document.getElementById('progress-bar');
-            const progressSteps = document.getElementById('progress-steps');
-            const feedbackContainer = document.getElementById('feedback');
-            const feedbackCorrect = document.getElementById('feedback-correct');
-            const feedbackIncorrect = document.getElementById('feedback-incorrect');
-            const feedbackCorrectText = document.getElementById('feedback-correct-text');
-            const feedbackIncorrectText = document.getElementById('feedback-incorrect-text');
-            const scoreElement = document.getElementById('score');
-            const levelResult = document.getElementById('level-result');
-            const certificateScore = document.getElementById('certificate-score');
-            const certificateLevel = document.getElementById('certificate-level');
-            const certificateDate = document.getElementById('certificate-date');
-            const audioContainer = document.getElementById('audio-container');
-            const questionAudio = document.getElementById('question-audio');
-            
-            // Créer les étapes de progression
-            progressSteps.innerHTML = '';
-            for (let i = 0; i < questions.length; i++) {
-                const step = document.createElement('div');
-                step.className = 'step';
-                step.textContent = i + 1;
-                
-                if (i === 0) {
-                    step.classList.add('active');
-                }
-                
-                progressSteps.appendChild(step);
+            // Démarrer le timer si activé
+            if (timerEnabled) {
+                startTimer();
+                DOM.quiz.timer.container.classList.remove('hidden');
+            } else {
+                DOM.quiz.timer.container.classList.add('hidden');
             }
             
             // Afficher la première question
-            showQuestion(currentQuestion);
+            showQuestion();
             
-            // Démarrer le quiz
-            function startQuiz() {
-                console.log("Démarrage du quiz...");
-                welcomeScreen.classList.add('hidden');
-                quizScreen.classList.remove('hidden');
+            // Créer les étapes de progression
+            createProgressSteps();
+            
+            // Mettre à jour la barre de progression
+            updateProgressBar();
+            
+            // Transition des écrans avec animation
+            DOM.screens.welcome.classList.add('fade-out');
+            
+            setTimeout(() => {
+                DOM.screens.welcome.classList.add('hidden');
+                DOM.screens.quiz.classList.remove('hidden');
+                DOM.screens.quiz.classList.add('fade-in');
+                DOM.screens.result.style.display = 'none';
+            }, 300);
+            
+            // Réinitialiser les boutons
+            DOM.buttons.prev.disabled = true;
+            DOM.buttons.next.style.display = 'inline-block';
+            DOM.buttons.next.disabled = true;
+            DOM.buttons.submit.style.display = 'none';
+        }
+
+        // Fonctions du timer
+        function startTimer() {
+            if (!timerEnabled) return;
+            
+            startTime = new Date();
+            totalTime = 0;
+            
+            for (let i = 0; i < questionTimes.length; i++) {
+                questionTimes[i] = 0;
             }
             
-            // Afficher une question
-            function showQuestion(index) {
-                console.log(`Affichage de la question ${index + 1}`);
-                
-                // Mettre à jour le texte de la question
-                questionText.textContent = questions[index].text;
-                questionNumber.textContent = `Question ${index + 1} sur ${questions.length}`;
-                
-                // Gérer l'audio si présent
-                if (questions[index].audio) {
-                    audioContainer.classList.remove('hidden');
-                    questionAudio.src = `audio/${questions[index].audio}`;
-                    questionAudio.load();
-                } else {
-                    audioContainer.classList.add('hidden');
-                    questionAudio.src = '';
-                }
-                
-                // Créer les options
-                optionsContainer.innerHTML = '';
-                questions[index].options.forEach((option, i) => {
-                    const optionElement = document.createElement('div');
-                    optionElement.className = 'option';
-                    optionElement.textContent = option;
-                    optionElement.setAttribute('data-index', i);
-                    optionElement.tabIndex = 0;
-                    
-                    // Ajouter la classe 'selected' si cette option a déjà été sélectionnée
-                    if (userAnswers[index] === i) {
-                        optionElement.classList.add('selected');
-                        selectedOption = optionElement;
-                    }
-                    
-                    // Ajouter l'événement de clic
-                    optionElement.addEventListener('click', function() {
-                        selectOption(this);
-                    });
-                    
-                    // Ajouter l'événement clavier (accessibilité)
-                    optionElement.addEventListener('keydown', function(e) {
-                        if (e.code === 'Enter' || e.code === 'Space') {
-                            e.preventDefault();
-                            selectOption(this);
-                        }
-                    });
-                    
-                    optionsContainer.appendChild(optionElement);
-                });
-                
-                // Mettre à jour la barre de progression
-                updateProgress();
-                
-                // Afficher le feedback si une réponse a déjà été donnée
-                if (userAnswers[index] !== null) {
-                    showFeedback(index, userAnswers[index]);
-                } else {
-                    hideFeedback();
-                }
-                
-                // Activer/désactiver les boutons de navigation
-                prevBtn.disabled = index === 0;
-                nextBtn.disabled = userAnswers[index] === null;
-                
-                if (index === questions.length - 1) {
-                    nextBtn.innerHTML = 'Terminer <i class="fas fa-check btn-icon"></i>';
-                } else {
-                    nextBtn.innerHTML = 'Suivant <i class="fas fa-arrow-right btn-icon"></i>';
-                }
-            }
-            
-            // Sélectionner une option
-            function selectOption(optionElement) {
-                console.log("Option sélectionnée");
-                
-                // Retirer la classe 'selected' de l'option précédemment sélectionnée
-                if (selectedOption) {
-                    selectedOption.classList.remove('selected');
-                }
-                
-                // Ajouter la classe 'selected' à l'option sélectionnée
-                optionElement.classList.add('selected');
-                selectedOption = optionElement;
-                
-                // Enregistrer la réponse
-                const selectedIndex = parseInt(optionElement.getAttribute('data-index'));
-                userAnswers[currentQuestion] = selectedIndex;
-                
-                // Afficher le feedback
-                showFeedback(currentQuestion, selectedIndex);
-                
-                // Activer le bouton suivant
-                nextBtn.disabled = false;
-                console.log("Bouton Suivant activé");
-                
-                // Mettre à jour la progression
-                updateProgress();
-            }
-            
-            // Afficher le feedback
-            function showFeedback(questionIndex, selectedIndex) {
-                const isCorrect = selectedIndex === questions[questionIndex].correctIndex;
-                
-                // Ajouter les classes correct/incorrect aux options
-                const options = document.querySelectorAll('.option');
-                options.forEach((option, i) => {
-                    option.classList.remove('correct', 'incorrect');
-                    if (i === questions[questionIndex].correctIndex) {
-                        option.classList.add('correct');
-                    } else if (i === selectedIndex && !isCorrect) {
-                        option.classList.add('incorrect');
-                    }
-                });
-                
-                // Afficher le feedback
-                feedbackContainer.classList.add('visible');
-                
-                if (isCorrect) {
-                    feedbackCorrect.classList.remove('hidden');
-                    feedbackIncorrect.classList.add('hidden');
-                    feedbackCorrectText.innerHTML = questions[questionIndex].explanation;
-                } else {
-                    feedbackCorrect.classList.add('hidden');
-                    feedbackIncorrect.classList.remove('hidden');
-                    feedbackIncorrectText.innerHTML = questions[questionIndex].explanation;
-                }
-            }
-            
-            // Cacher le feedback
-            function hideFeedback() {
-                feedbackContainer.classList.remove('visible');
-            }
-            
-            // Mettre à jour la progression
-            function updateProgress() {
-                // Mettre à jour la barre de progression
-                const progress = ((currentQuestion + 1) / questions.length) * 100;
-                progressBar.style.width = `${progress}%`;
-                
-                // Mettre à jour les étapes
-                const steps = document.querySelectorAll('.step');
-                steps.forEach((step, i) => {
-                    step.classList.remove('active', 'completed', 'error');
-                    
-                    if (i === currentQuestion) {
-                        step.classList.add('active');
-                    } else if (i < currentQuestion) {
-                        if (userAnswers[i] === questions[i].correctIndex) {
-                            step.classList.add('completed');
-                        } else {
-                            step.classList.add('error');
-                        }
-                    }
-                });
-            }
-            
-            // Question suivante
-            function nextQuestion() {
-                console.log("Bouton Suivant cliqué");
-                if (currentQuestion < questions.length - 1) {
-                    currentQuestion++;
-                    showQuestion(currentQuestion);
-                } else {
-                    finishQuiz();
-                }
-            }
-            
-            // Question précédente
-            function prevQuestion() {
-                console.log("Bouton Précédent cliqué");
-                if (currentQuestion > 0) {
-                    currentQuestion--;
-                    showQuestion(currentQuestion);
-                }
-            }
-            
-            // Terminer le quiz
-            function finishQuiz() {
-                console.log("Fin du quiz");
-                
-                // Calculer le score
-                score = userAnswers.reduce((total, answer, index) => {
-                    return total + (answer === questions[index].correctIndex ? 1 : 0);
-                }, 0);
-                
-                // Afficher le score
-                scoreElement.textContent = score;
-                certificateScore.textContent = score;
-                
-                // Déterminer le niveau
-                let level = '';
-                let levelDescription = '';
-                
-                if (score >= 8) {
-                    level = 'A2';
-                    levelDescription = 'You have mastered the basics of French communication. You can introduce yourself, ask for directions, and understand simple phrases used in everyday life.';
-                } else if (score >= 6) {
-                    level = 'A1+';
-                    levelDescription = 'You know the fundamentals and are approaching the A2 level. With a bit more practice on everyday expressions, you\'ll soon reach the A2 level.';
-                } else if (score >= 4) {
-                    level = 'A1';
-                    levelDescription = 'You know some basic expressions, but you still need to practice to reach level A2. Keep learning!';
-                } else if (score >= 2) {
-                    level = 'Pre-A1';
-                    levelDescription = 'You have started learning French. With more practice on basic expressions, you\'ll progress to A1 level.';
-                } else {
-                    level = 'Beginner';
-                    levelDescription = 'You\'re just beginning with French. Don\'t worry! Everyone starts somewhere. Keep practicing!';
-                }
-                
-                // Afficher le niveau
-                levelResult.innerHTML = `
-                    <h3>Niveau: ${level}</h3>
-                    <p>${levelDescription}</p>
-                `;
-                certificateLevel.textContent = level;
-                
-                // Afficher la date sur le certificat
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                certificateDate.textContent = now.toLocaleDateString('fr-FR', options);
-                
-                // Afficher l'écran des résultats
-                quizScreen.classList.add('hidden');
-                resultsScreen.classList.remove('hidden');
-            }
-            
-            // Partager les résultats
-            function shareResults() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Test Your French - Mon résultat',
-                        text: `J'ai obtenu un score de ${score}/10 et atteint le niveau ${certificateLevel.textContent} au Test Your French Quiz !`,
-                        url: window.location.href
-                    })
-                    .catch(error => console.log('Erreur de partage:', error));
-                } else {
-                    // Fallback si l'API de partage n'est pas disponible
-                    alert(`Copiez ce texte pour partager: J'ai obtenu un score de ${score}/10 et atteint le niveau ${certificateLevel.textContent} au Test Your French Quiz !`);
-                }
-            }
-            
-            // Redémarrer le quiz
-            function restartQuiz() {
-                console.log("Redémarrage du quiz");
-                
-                // Réinitialiser les variables
-                currentQuestion = 0;
-                score = 0;
-                userAnswers = Array(questions.length).fill(null);
-                selectedOption = null;
-                
-                // Réinitialiser les étapes de progression
-                const steps = document.querySelectorAll('.step');
-                steps.forEach((step, i) => {
-                    step.classList.remove('active', 'completed', 'error');
-                    if (i === 0) {
-                        step.classList.add('active');
-                    }
-                });
-                
-                // Retourner à l'écran du quiz
-                resultsScreen.classList.add('hidden');
-                quizScreen.classList.remove('hidden');
-                
-                // Afficher la première question
-                showQuestion(0);
-            }
-            
-            // Attacher les événements des boutons
-            console.log("Attachement des événements des boutons...");
-            startBtn.addEventListener('click', startQuiz);
-            
-            // Utilisation de fonctions nommées pour les écouteurs d'événements pour améliorer la lisibilité
-            nextBtn.addEventListener('click', function(e) {
-                console.log("Clic sur le bouton Suivant");
-                nextQuestion();
-            });
-            
-            prevBtn.addEventListener('click', function(e) {
-                console.log("Clic sur le bouton Précédent");
-                prevQuestion();
-            });
-            
-            restartBtn.addEventListener('click', restartQuiz);
-            shareBtn.addEventListener('click', shareResults);
-            
-            // Débug pour vérifier si les écouteurs sont bien attachés
-            console.log("Initialisation terminée. Quiz prêt.");
+            updateTimerDisplay();
+            timerInterval = setInterval(updateTimerDisplay, 1000);
         }
         
-      // Lancer l'initialisation du quiz
-    initQuiz();
-</script>
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+        
+        function updateTimerDisplay() {
+            if (!timerEnabled) return;
+            
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            
+            const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+            const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+            
+            DOM.quiz.timer.value.textContent = `${minutes}:${seconds}`;
+        }
+        
+        function recordQuestionTime() {
+            if (!timerEnabled || startTime === null) return;
+            
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            
+            questionTimes[currentQuestion] = elapsedTime;
+            startTime = currentTime; // Réinitialiser pour la question suivante
+        }
+        
+        function toggleTimer() {
+            const timerContainer = DOM.quiz.timer.container;
+            
+            if (timerContainer.classList.contains('timer-hidden')) {
+                timerContainer.classList.remove('timer-hidden');
+                DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Masquer le chronomètre');
+            } else {
+                timerContainer.classList.add('timer-hidden');
+                DOM.quiz.timer.toggle.innerHTML = '<i class="fas fa-eye"></i>';
+                DOM.quiz.timer.toggle.setAttribute('aria-label', 'Afficher le chronomètre');
+            }
+        }
 
-<script>
-  // Script de correction pour les boutons de navigation
-  document.addEventListener('DOMContentLoaded', function() {
-    // Force le mode clair
-    document.documentElement.style.setProperty('--bg', '#f9f9f9');
-    document.documentElement.style.setProperty('--card-bg', 'white');
-    document.documentElement.style.setProperty('--text', '#333');
-    
-    // Correctif pour les boutons
-    document.getElementById('next-btn').onclick = function() {
-      console.log("Bouton Suivant cliqué directement");
-      if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        showQuestion(currentQuestion);
-      } else {
-        finishQuiz();
-      }
-    };
-    
-    document.getElementById('prev-btn').onclick = function() {
-      console.log("Bouton Précédent cliqué directement");
-      if (currentQuestion > 0) {
-        currentQuestion--;
-        showQuestion(currentQuestion);
-      }
-    };
-  });
-</script>
+        // Crée les étapes de progression
+        function createProgressSteps() {
+            DOM.quiz.progress.steps.innerHTML = '';
+            
+            for (let i = 0; i < quizQuestions.length; i++) {
+                const step = document.createElement('div');
+                step.className = 'step';
+                step.textContent = i + 1;
+                step.setAttribute('aria-label', `Question ${i + 1}`);
+                
+                if (i === currentQuestion) {
+                    step.classList.add('active');
+                    step.setAttribute('aria-current', 'true');
+                } else if (questionStatus[i] === 'correct') {
+                    step.classList.add('completed');
+                    step.setAttribute('aria-label', `Question ${i + 1} - Correcte`);
+                } else if (questionStatus[i] === 'incorrect') {
+                    step.classList.add('error');
+                    step.setAttribute('aria-label', `Question ${i + 1} - Incorrecte`);
+                }
+                
+                DOM.quiz.progress.steps.appendChild(step);
+            }
+        }
+
+        // Affiche la question actuelle
+        function showQuestion() {
+            const question = quizQuestions[currentQuestion];
+            
+            // Créer le HTML pour la question
+            let questionHTML = `
+                <div class="question-container fade-in">
+                    <h2>Question ${currentQuestion + 1} sur ${quizQuestions.length}</h2>
+                    <p class="question-text">${question.question}</p>
+            `;
+            
+            // Ajouter l'audio si disponible
+            if (question.audio) {
+                questionHTML += `
+                    <div class="audio-container">
+                        <audio controls>
+                            <source src="${question.audio}" type="audio/mpeg">
+                            Votre navigateur ne supporte pas l'élément audio.
+                        </audio>
+                    </div>
+                `;
+            }
+            
+            questionHTML += `<div class="options" role="radiogroup" aria-labelledby="question-${currentQuestion + 1}">`;
+            
+            // Ajouter les options
+            question.options.forEach((option, index) => {
+                const isSelected = selectedAnswers[currentQuestion] === option;
+                let additionalClass = isSelected ? 'selected' : '';
+                
+                // Ajouter les classes correct/incorrect si la question a été répondue
+                if (isSelected && questionStatus[currentQuestion]) {
+                    additionalClass += questionStatus[currentQuestion] === 'correct' ? ' correct' : ' incorrect';
+                }
+                
+                questionHTML += `
+                    <div class="option ${additionalClass}" 
+                         data-index="${index}" 
+                         role="radio" 
+                         aria-checked="${isSelected ? 'true' : 'false'}"
+                         tabindex="0">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            questionHTML += `
+                    </div>
+                </div>
+            `;
+            
+            // Afficher la question
+            DOM.quiz.container.innerHTML = questionHTML;
+            
+            // Vider le conteneur de feedback
+            DOM.quiz.feedback.classList.remove('visible');
+            DOM.quiz.feedback.innerHTML = '';
+            
+            // Réafficher le feedback si la question a déjà été répondue
+            if (selectedAnswers[currentQuestion] && questionStatus[currentQuestion]) {
+                updateFeedback();
+            }
+            
+            // Ajouter les écouteurs d'événements aux options
+            attachOptionEventListeners();
+            
+            // Mettre à jour l'interface
+            updateButtons();
+            updateProgressBar();
+            createProgressSteps();
+            
+            // Accessibilité: focus sur la première option
+            setTimeout(() => {
+                const firstOption = document.querySelector('.option');
+                if (firstOption) firstOption.focus();
+            }, 500);
+        }
+
+        // Attache les écouteurs d'événements aux options
+        function attachOptionEventListeners() {
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach(option => {
+                // Clic souris
+                option.addEventListener('click', selectOption);
+                
+                // Accessibilité clavier
+                option.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectOption({ target: option });
+                    }
+                });
+            });
+        }
+
+        // Met à
